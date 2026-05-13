@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>TripTrace - Smart Travel Planner</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: linear-gradient(135deg, #fef2f7 0%, #ffe4ef 100%); min-height: 100vh; }
+        .app-container { width: 100%; max-width: 1200px; margin: 0 auto; background-color: #ffffff; min-height: 100vh; display: flex; flex-direction: column; }
+        .app-screen { flex: 1; padding: 30px 25px 80px 25px; overflow-y: auto; }
+        .hidden { display: none !important; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; max-width: 1200px; margin: 0 auto; background: white; display: flex; justify-content: space-around; align-items: center; padding: 12px 20px 20px; box-shadow: 0 -5px 20px rgba(0,0,0,0.08); border-top: 1px solid #ffe0ec; z-index: 100; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 5px; cursor: pointer; flex: 1; color: #b8a1ab; font-size: 12px; }
+        .nav-item i { font-size: 24px; }
+        .nav-item.active { color: #ff4d7a; }
+        .logo-area { text-align: center; margin-bottom: 30px; }
+        .logo-icon { width: 85px; height: 85px; border-radius: 30px; margin: 0 auto 15px; overflow: hidden; background: linear-gradient(135deg, #ff7aa2, #ff4d7a); box-shadow: 0 10px 20px rgba(255,77,122,0.3); display: flex; align-items: center; justify-content: center; }
+        .logo-icon img { width: 100%; height: 100%; object-fit: cover; }
+        .logo-area h1 { font-size: 36px; font-weight: 800; background: linear-gradient(135deg, #FF4785, #FF8AB5); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .logo-tagline { font-size: 14px; color: #a07a8a; }
+        .slider-section { margin-bottom: 30px; }
+        .section-title { font-size: 20px; font-weight: 600; margin-bottom: 18px; display: flex; align-items: center; gap: 10px; }
+        .card-slider { display: flex; overflow-x: auto; gap: 18px; padding-bottom: 10px; }
+        .info-card { flex: 0 0 270px; background: #fff5f9; border-radius: 28px; padding: 20px; border: 1px solid #ffe0ec; }
+        .info-card img { width: 50px; height: 50px; object-fit: cover; border-radius: 12px; margin-bottom: 10px; }
+        .info-card i { font-size: 36px; color: #ff6b99; margin-bottom: 12px; }
+        .info-card h3 { font-size: 18px; margin-bottom: 8px; }
+        .info-card p { font-size: 13px; color: #7b5e6b; }
+        .form-card { background: white; border-radius: 32px; padding: 25px; max-width: 800px; margin: 0 auto; border: 1px solid #ffe2ef; }
+        .form-title { font-size: 24px; text-align: center; margin-bottom: 20px; color: #ff4d7a; }
+        .input-group { margin-bottom: 15px; display: flex; flex-direction: column; gap: 6px; }
+        .input-group label { font-size: 13px; font-weight: 600; color: #5a3f4a; }
+        .input-group input, .input-group textarea, .input-group select { padding: 12px 16px; border-radius: 40px; border: 1.5px solid #f0cedd; font-size: 14px; background: #fefafc; font-family: 'Poppins', sans-serif; }
+        .row-2 { display: flex; gap: 15px; }
+        .row-2 .input-group { flex: 1; }
+        .btn-group-row { display: flex; gap: 15px; margin-top: 15px; }
+        .submit-btn { background: linear-gradient(95deg, #ff4d7a, #ff7ca3); border: none; padding: 12px; border-radius: 60px; font-weight: 700; color: white; flex: 1; cursor: pointer; transition: all 0.2s; }
+        .submit-btn:hover { opacity: 0.9; transform: translateY(-2px); }
+        .cancel-btn { background: #f0cedd; border: none; padding: 12px; border-radius: 60px; font-weight: 700; color: #a07a8a; flex: 1; cursor: pointer; transition: all 0.2s; }
+        .cancel-btn:hover { background: #e8d0dc; transform: translateY(-2px); }
+        .secondary-btn { background: #ffecf2; border: none; padding: 8px 15px; border-radius: 30px; color: #ff4d7a; cursor: pointer; font-size: 12px; margin-top: 5px; transition: all 0.2s; }
+        .secondary-btn:hover { background: #ffdae8; transform: translateY(-2px); }
+        .danger-btn { background: #ffe0e8; border: none; padding: 12px; border-radius: 60px; color: #d43f6b; font-weight: 600; cursor: pointer; width: 100%; margin-top: 10px; transition: all 0.2s; font-family: 'Poppins', sans-serif; font-size: 14px; }
+        .danger-btn:hover { background: #ffd0dc; transform: translateY(-2px); }
+        .logout-btn { background: #ffe0e8; border: none; padding: 12px; border-radius: 50px; color: #d43f6b; font-weight: 600; width: 100%; cursor: pointer; margin-top: 15px; transition: all 0.2s; font-family: 'Poppins', sans-serif; font-size: 14px; }
+        .logout-btn:hover { background: #ffd0dc; transform: translateY(-2px); }
+        .toggle-form { text-align: center; font-size: 13px; margin-top: 20px; }
+        .toggle-form span { color: #ff4d7a; font-weight: 700; cursor: pointer; }
+        .error-msg { color: #e63946; font-size: 12px; text-align: center; margin-top: 10px; }
+        .back-link { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 20px; cursor: pointer; color: #ff5e8a; }
+        .map-container { width: 100%; height: 200px; border-radius: 20px; overflow: hidden; border: 1.5px solid #f0cedd; margin-top: 5px; }
+        .search-container { position: relative; margin-bottom: 10px; }
+        .search-input { width: 100%; padding: 12px 16px; border-radius: 40px; border: 1.5px solid #f0cedd; font-size: 14px; }
+        .suggestions-list { position: absolute; top: 100%; left: 0; right: 0; background: white; border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.15); z-index: 1000; max-height: 200px; overflow-y: auto; display: none; }
+        .suggestion-item { padding: 10px 16px; cursor: pointer; border-bottom: 1px solid #ffe0ec; font-size: 13px; }
+        .suggestion-item:hover { background: #fff0f5; }
+        .selected-location { font-size: 12px; color: #ff6b99; margin-top: 8px; padding: 5px 10px; background: #fff0f5; border-radius: 20px; display: inline-block; }
+        .itinerary-builder { margin-top: 25px; border-top: 2px dashed #ffe0ec; padding-top: 20px; }
+        .itinerary-builder-title { font-size: 18px; font-weight: 700; color: #ff4d7a; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+        .itinerary-day-card { background: #fff8fa; border-radius: 20px; padding: 15px; margin-bottom: 15px; border: 1px solid #ffe0ec; }
+        .day-header-builder { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #ffe0ec; }
+        .day-title-input { font-weight: 700; background: none; border: 1px solid #f0cedd; padding: 5px 12px; border-radius: 20px; font-size: 13px; width: auto; }
+        .remove-day-btn { background: none; border: none; color: #ff9999; cursor: pointer; font-size: 16px; }
+        .activities-list { margin-bottom: 10px; }
+        .activity-item-builder { padding: 8px; background: white; border-radius: 12px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #f0cedd; }
+        .activity-info { display: flex; align-items: center; gap: 12px; flex: 1; }
+        .activity-time-input { padding: 5px 10px; border-radius: 20px; border: 1px solid #f0cedd; font-size: 12px; width: 100px; }
+        .activity-text-input { flex: 1; padding: 5px 10px; border-radius: 20px; border: 1px solid #f0cedd; font-size: 12px; }
+        .delete-activity-btn { background: none; border: none; color: #ff9999; cursor: pointer; margin-left: 10px; }
+        .add-activity-btn-builder { background: #ffecf2; border: none; padding: 8px 15px; border-radius: 30px; color: #ff4d7a; cursor: pointer; font-size: 12px; margin-top: 5px; }
+        .add-day-btn { background: #ffecf2; border: none; padding: 10px 20px; border-radius: 30px; color: #ff4d7a; cursor: pointer; font-size: 14px; margin-top: 10px; width: 100%; }
+        .budget-input-row { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+        .budget-input-row .input-group { flex: 1; margin-bottom: 0; }
+        .expense-item-row { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; background: #fefafc; padding: 8px 12px; border-radius: 60px; border: 1px solid #f0cedd; }
+        .expense-item-row .expense-desc-input { flex: 2; padding: 8px 12px; border-radius: 40px; border: 1px solid #f0cedd; font-size: 12px; }
+        .expense-item-row .expense-amount-input { width: 100px; padding: 8px 12px; border-radius: 40px; border: 1px solid #f0cedd; font-size: 12px; }
+        .expense-item-row .expense-cat-select { width: 120px; padding: 8px 12px; border-radius: 40px; border: 1px solid #f0cedd; font-size: 11px; background: white; }
+        .expense-item-row .remove-expense-btn { background: none; border: none; color: #ff9999; cursor: pointer; font-size: 16px; }
+        .add-expense-btn-builder { background: #ffecf2; border: none; padding: 8px 15px; border-radius: 30px; color: #ff4d7a; cursor: pointer; font-size: 12px; margin-top: 5px; }
+        .expenses-list-builder { margin-bottom: 10px; max-height: 200px; overflow-y: auto; }
+        .budget-summary { background: linear-gradient(135deg, #e8f5e9, #c8e6d9); border-radius: 20px; padding: 15px; margin-bottom: 15px; }
+        .budget-amount { display: flex; justify-content: space-between; margin-bottom: 8px; }
+        .budget-label { font-size: 13px; color: #2e7d32; }
+        .budget-value { font-weight: 700; color: #2e7d32; }
+        .budget-progress-bar { background: #c8e6e0; border-radius: 20px; height: 8px; overflow: hidden; margin: 10px 0; }
+        .budget-progress-fill { background: #4caf50; width: 0%; height: 100%; border-radius: 20px; transition: width 0.3s; }
+        .welcome-banner { background: linear-gradient(125deg, #f0f9f4, #e6f5ed); border-radius: 28px; padding: 25px; text-align: center; margin-bottom: 25px; background-size: cover; background-position: center; position: relative; }
+        .welcome-banner .overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.3); border-radius: 28px; }
+        .welcome-banner .content { position: relative; z-index: 1; }
+        .quick-access { background: #fcf4f9; border-radius: 28px; padding: 20px; margin-top: 15px; background-size: cover; background-position: center; position: relative; }
+        .quick-access .overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,0.9); border-radius: 28px; }
+        .quick-access .content { position: relative; z-index: 1; }
+        .chips { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 12px; }
+        .chip { background: white; padding: 8px 18px; border-radius: 50px; font-size: 13px; border: 1px solid #ffdbeb; color: #c53460; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 5px; }
+        .chip img { width: 16px; height: 16px; border-radius: 50%; }
+        .chip:hover { background: #ffecf2; transform: translateY(-2px); }
+        .upcoming-section { margin-top: 25px; background-size: cover; background-position: center; border-radius: 28px; padding: 15px; position: relative; }
+        .upcoming-section .overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255,248,250,0.92); border-radius: 28px; }
+        .upcoming-section .content { position: relative; z-index: 1; }
+        .upcoming-card { background: linear-gradient(135deg, #fff0f5, #ffe8f0); border-radius: 28px; padding: 18px; margin-bottom: 15px; display: flex; gap: 15px; align-items: center; border: 1px solid #ffd9e8; }
+        .upcoming-img { width: 70px; height: 70px; border-radius: 20px; background: #ffd0e0; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; }
+        .upcoming-img img { width: 100%; height: 100%; object-fit: cover; }
+        .upcoming-img i { font-size: 30px; color: #ff6b99; }
+        .upcoming-info { flex: 1; }
+        .upcoming-info h4 { font-size: 16px; margin-bottom: 4px; }
+        .upcoming-info p { font-size: 12px; color: #a07a8a; margin-bottom: 8px; }
+        .progress-bar { background: #f0cedd; border-radius: 20px; height: 6px; overflow: hidden; }
+        .progress-fill { background: #ff4d7a; width: 0%; height: 100%; border-radius: 20px; }
+        .trip-date { font-size: 11px; color: #ff6b99; margin-top: 5px; }
+        .profile-header { background: linear-gradient(135deg, #ff7aa2, #ff4d7a); border-radius: 32px; padding: 30px 20px; text-align: center; margin-bottom: 20px; color: white; position: relative; }
+        .profile-avatar-large { width: 100px; height: 100px; background: white; border-radius: 50%; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; overflow: hidden; cursor: pointer; box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
+        .profile-avatar-large i { font-size: 60px; color: #ff4d7a; }
+        .profile-avatar-large img { width: 100%; height: 100%; object-fit: cover; }
+        .profile-name-large { font-size: 24px; font-weight: 700; margin-bottom: 5px; }
+        .profile-email-large { font-size: 13px; opacity: 0.9; }
+        .edit-profile-icon { position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.3); border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; }
+        .edit-profile-icon:hover { background: rgba(255,255,255,0.5); }
+        .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
+        .stat-card { background: #fefafc; border-radius: 20px; padding: 15px; text-align: center; border: 1px solid #ffe0ec; }
+        .stat-number { font-size: 28px; font-weight: 800; color: #ff4d7a; }
+        .stat-label { font-size: 12px; color: #a07a8a; margin-top: 5px; }
+        .social-stats { display: flex; justify-content: space-around; background: #fff5f9; border-radius: 28px; padding: 15px; margin-bottom: 20px; border: 1px solid #ffe0ec; }
+        .social-stat { text-align: center; cursor: pointer; }
+        .social-stat-number { font-weight: 700; font-size: 18px; color: #ff4d7a; }
+        .social-stat-label { font-size: 11px; color: #a07a8a; }
+        .profile-section { background: white; border-radius: 24px; padding: 18px; margin-bottom: 15px; border: 1px solid #ffe0ec; }
+        .profile-section-title { font-weight: 700; color: #ff4d7a; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; font-size: 14px; }
+        .public-trip-mini { display: flex; align-items: center; gap: 12px; padding: 10px; background: #fefafc; border-radius: 16px; margin-bottom: 8px; cursor: pointer; transition: all 0.2s; }
+        .public-trip-mini:hover { background: #fff0f5; transform: translateX(5px); }
+        .public-trip-mini-img { width: 45px; height: 45px; border-radius: 12px; background: #f0cedd; overflow: hidden; }
+        .public-trip-mini-img img { width: 100%; height: 100%; object-fit: cover; }
+        .public-trip-mini-info { flex: 1; }
+        .public-trip-mini-name { font-weight: 600; font-size: 14px; }
+        .public-trip-mini-dest { font-size: 11px; color: #a07a8a; }
+        .avatar-colors { display: flex; gap: 12px; justify-content: center; margin: 15px 0; flex-wrap: wrap; }
+        .avatar-color { width: 45px; height: 45px; border-radius: 50%; cursor: pointer; border: 3px solid transparent; transition: all 0.2s; }
+        .avatar-color.selected { border-color: #ff4d7a; transform: scale(1.1); }
+        .trip-item { background: #fefafc; border-radius: 20px; padding: 15px; margin-bottom: 12px; border: 1px solid #f0cedd; display: flex; gap: 15px; align-items: center; cursor: pointer; transition: all 0.2s; }
+        .trip-item:hover { background: #fff5f9; border-color: #ffc0d0; transform: translateX(5px); }
+        .trip-item-img { width: 55px; height: 55px; border-radius: 15px; background: #f0cedd; overflow: hidden; flex-shrink: 0; }
+        .trip-item-img img { width: 100%; height: 100%; object-fit: cover; }
+        .trip-item-img i { font-size: 28px; color: #ff99bb; display: flex; align-items: center; justify-content: center; height: 100%; }
+        .trip-item-info { flex: 1; }
+        .trip-badge { display: inline-block; font-size: 10px; padding: 2px 8px; border-radius: 20px; margin-top: 5px; }
+        .badge-public { background: #e8f5e9; color: #4caf50; }
+        .badge-private { background: #ffecf2; color: #ff6b99; }
+        .badge-completed { background: #e3f2fd; color: #2196f3; }
+        .badge-ongoing { background: #fff3e0; color: #ff9800; }
+        .trip-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+        .share-toggle { background: none; border: 1px solid #ff99bb; border-radius: 30px; padding: 5px 12px; font-size: 11px; cursor: pointer; color: #ff4d7a; transition: all 0.2s; }
+        .share-toggle:hover { background: #ffecf2; transform: translateY(-2px); }
+        .edit-btn, .delete-btn { background: none; border: none; font-size: 18px; cursor: pointer; padding: 5px; transition: all 0.2s; }
+        .edit-btn { color: #ffa500; }
+        .edit-btn:hover { transform: scale(1.1); }
+        .delete-btn { color: #ff4d4d; }
+        .delete-btn:hover { transform: scale(1.1); }
+        .empty-state { text-align: center; padding: 40px; color: #b8a1ab; }
+        .btn-group { display: flex; gap: 15px; margin: 20px 0; }
+        .btn-primary { flex: 1; padding: 14px; border-radius: 60px; background: #ff4d7a; color: white; border: none; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+        .btn-primary:hover { opacity: 0.9; transform: translateY(-2px); }
+        .btn-outline { flex: 1; padding: 14px; border-radius: 60px; background: transparent; border: 1.5px solid #ff99bb; color: #d43f6b; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+        .btn-outline:hover { background: #fff0f5; transform: translateY(-2px); }
+        footer { text-align: center; font-size: 11px; color: #cfb1be; margin-top: 30px; }
+        .image-preview { margin: 15px 0; display: flex; justify-content: center; }
+        .image-preview img { width: 100px; height: 100px; border-radius: 20px; object-fit: cover; border: 2px solid #ffdbeb; }
+        .file-input-label { background: #f0cedd; padding: 10px; border-radius: 40px; text-align: center; cursor: pointer; font-size: 13px; color: #ff4d7a; display: inline-block; transition: all 0.2s; }
+        .file-input-label:hover { background: #e8d0dc; transform: translateY(-2px); }
+        .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 200; align-items: center; justify-content: center; padding: 20px; }
+        .modal-content { background: white; border-radius: 32px; max-width: 550px; width: 100%; max-height: 85vh; overflow-y: auto; padding: 25px; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #ffe0ec; }
+        .close-modal { font-size: 28px; cursor: pointer; color: #ff6b99; transition: all 0.2s; }
+        .close-modal:hover { transform: scale(1.1); }
+        .itin-day-card { background: #fff8fa; border-radius: 20px; padding: 15px; margin-bottom: 15px; border: 1px solid #ffe0ec; }
+        .itin-day-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #ffe0ec; }
+        .itin-day-title { font-weight: 700; color: #ff4d7a; font-size: 16px; background: none; border: 1px solid #f0cedd; padding: 5px 12px; border-radius: 20px; width: auto; }
+        .day-complete-badge { font-size: 11px; padding: 4px 10px; border-radius: 20px; background: #e8f5e9; color: #4caf50; }
+        .itin-activity-item { padding: 8px 12px; background: white; border-radius: 12px; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; border: 1px solid #f0cedd; }
+        .itin-activity-checkbox { width: 20px; height: 20px; cursor: pointer; }
+        .itin-activity-time { background: #ffecf2; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; color: #ff4d7a; min-width: 80px; text-align: center; }
+        .itin-activity-text { flex: 1; font-size: 13px; color: #5a3f4a; background: none; border: none; padding: 5px; }
+        .itin-activity-text.completed { text-decoration: line-through; color: #b8a1ab; }
+        .delete-itin-activity { background: none; border: none; color: #ff9999; cursor: pointer; font-size: 14px; transition: all 0.2s; }
+        .delete-itin-activity:hover { transform: scale(1.1); }
+        .add-itin-activity-btn { background: #ffecf2; border: none; padding: 6px 12px; border-radius: 30px; color: #ff4d7a; cursor: pointer; font-size: 11px; margin-top: 8px; transition: all 0.2s; }
+        .add-itin-activity-btn:hover { background: #ffdae8; transform: translateY(-2px); }
+        .add-itin-day-btn { background: #ffecf2; border: none; padding: 10px 20px; border-radius: 30px; color: #ff4d7a; cursor: pointer; font-size: 14px; width: 100%; margin-top: 10px; transition: all 0.2s; }
+        .add-itin-day-btn:hover { background: #ffdae8; transform: translateY(-2px); }
+        .save-itinerary-btn { background: linear-gradient(95deg, #ff4d7a, #ff7ca3); border: none; padding: 12px; border-radius: 60px; font-weight: 700; color: white; width: 100%; margin-top: 15px; cursor: pointer; transition: all 0.2s; }
+        .save-itinerary-btn:hover { opacity: 0.9; transform: translateY(-2px); }
+        .no-itinerary { text-align: center; padding: 30px; color: #b8a1ab; }
+        .gallery-section { margin-top: 20px; padding-top: 15px; border-top: 2px dashed #ffe0ec; }
+        .gallery-title { font-size: 16px; font-weight: 700; color: #ff4d7a; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .upload-gallery-btn { background: #ffecf2; border: none; padding: 6px 12px; border-radius: 30px; color: #ff4d7a; cursor: pointer; font-size: 11px; margin-left: auto; transition: all 0.2s; }
+        .upload-gallery-btn:hover { background: #ffdae8; transform: translateY(-2px); }
+        .gallery-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+        .gallery-item { background: #fff5f9; border-radius: 20px; overflow: hidden; border: 1px solid #ffe0ec; position: relative; }
+        .gallery-img-container { position: relative; aspect-ratio: 1; overflow: hidden; cursor: pointer; }
+        .gallery-img-container img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.2s; }
+        .gallery-img-container img:hover { transform: scale(1.05); }
+        .delete-gallery-img { position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.9); border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #ff4d4d; font-size: 14px; z-index: 2; transition: all 0.2s; }
+        .delete-gallery-img:hover { transform: scale(1.1); }
+        .gallery-caption { padding: 8px 10px; font-size: 11px; color: #5a3f4a; background: #fff8fa; border-top: 1px solid #ffe0ec; word-break: break-word; cursor: pointer; transition: all 0.2s; }
+        .gallery-caption:hover { background: #fff0f5; }
+        .no-gallery { text-align: center; padding: 30px; color: #b8a1ab; font-size: 12px; grid-column: 1/-1; }
+        .upload-item { display: flex; gap: 12px; margin-bottom: 15px; padding: 10px; background: #fff8fa; border-radius: 16px; align-items: center; }
+        .upload-img-preview { width: 60px; height: 60px; border-radius: 12px; object-fit: cover; flex-shrink: 0; }
+        .upload-caption-input { flex: 1; padding: 8px 12px; border-radius: 20px; border: 1.5px solid #f0cedd; font-size: 12px; }
+        .image-viewer-modal .modal-content { max-width: 500px; background: rgba(0,0,0,0.9); padding: 0; overflow: hidden; }
+        .image-viewer-modal .modal-header { border-bottom: none; position: absolute; top: 10px; right: 10px; z-index: 10; }
+        .image-viewer-modal .close-modal { color: white; }
+        .fullscreen-img { width: 100%; height: auto; max-height: 80vh; object-fit: contain; }
+        .filter-toggle-btn { background: #ffecf2; border: none; padding: 10px 18px; border-radius: 40px; color: #ff4d7a; font-weight: 600; font-size: 14px; cursor: pointer; margin-bottom: 15px; display: inline-flex; align-items: center; gap: 8px; }
+        .filter-toggle-btn:hover { background: #ffdae8; }
+        .filter-panel { display: none; background: #fff5f9; border-radius: 24px; padding: 15px; margin-bottom: 20px; border: 1px solid #ffe0ec; }
+        .filter-panel.show { display: block; }
+        .filter-title { font-weight: 600; color: #ff4d7a; margin-bottom: 12px; font-size: 14px; display: flex; align-items: center; gap: 8px; }
+        .filter-group { margin-bottom: 15px; }
+        .filter-label { display: flex; justify-content: space-between; font-size: 12px; color: #a07a8a; margin-bottom: 8px; }
+        .filter-slider { width: 100%; height: 4px; -webkit-appearance: none; background: #f0cedd; border-radius: 5px; outline: none; }
+        .filter-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: #ff4d7a; cursor: pointer; border: 2px solid white; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+        .filter-values { display: flex; justify-content: space-between; font-size: 11px; color: #ff6b99; margin-top: 5px; }
+        .duration-buttons { display: flex; gap: 10px; flex-wrap: wrap; }
+        .duration-btn { background: #f0cedd; border: none; padding: 6px 14px; border-radius: 30px; font-size: 12px; cursor: pointer; color: #a07a8a; transition: all 0.2s; }
+        .duration-btn.active { background: #ff4d7a; color: white; }
+        .reset-filter-btn { background: #ffecf2; border: none; padding: 8px; border-radius: 30px; width: 100%; color: #ff4d7a; font-size: 12px; cursor: pointer; margin-top: 10px; }
+        .filter-stats { font-size: 11px; color: #4caf50; text-align: center; margin-top: 10px; }
+        .explore-search { margin-bottom: 15px; }
+        .explore-search input { width: 100%; padding: 14px 18px; border-radius: 40px; border: 1.5px solid #f0cedd; font-size: 14px; }
+        .public-trip-card { background: #fefafc; border-radius: 20px; padding: 15px; margin-bottom: 15px; border: 1px solid #ffe0ec; cursor: pointer; transition: all 0.2s; }
+        .public-trip-card:hover { background: #fff5f9; transform: translateX(5px); }
+        .public-trip-header { display: flex; gap: 12px; margin-bottom: 10px; }
+        .public-trip-img { width: 60px; height: 60px; border-radius: 15px; background: #f0cedd; overflow: hidden; }
+        .public-trip-img img { width: 100%; height: 100%; object-fit: cover; }
+        .public-trip-info h4 { margin-bottom: 4px; }
+        .public-trip-info p { font-size: 12px; color: #a07a8a; }
+        .public-trip-stats { font-size: 11px; color: #4caf50; margin-top: 8px; }
+        .favorite-btn { background: none; border: none; font-size: 16px; cursor: pointer; color: #ddd; transition: all 0.2s; margin-left: 8px; }
+        .favorite-btn.active { color: #ff4d4d; }
+        .favorite-btn:hover { transform: scale(1.1); }
+        .rating-stars { display: inline-flex; gap: 3px; background: #fff8fa; padding: 4px 10px; border-radius: 30px; margin-top: 6px; align-items: center; }
+        .rating-star { font-size: 12px; cursor: pointer; color: #ddd; transition: all 0.2s; }
+        .rating-star:hover { color: #ffc107; transform: scale(1.1); }
+        .rating-star.active { color: #ffc107; }
+        .rating-average { font-size: 11px; color: #ffc107; margin-left: 8px; }
+        .gallery-preview { display: flex; gap: 5px; margin-top: 8px; flex-wrap: wrap; }
+        .gallery-preview-img { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; cursor: pointer; }
+        .public-trip-detail { max-height: 60vh; overflow-y: auto; }
+        .expense-item { background: white; border-radius: 16px; padding: 12px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #f0cedd; }
+        .expense-info { flex: 1; }
+        .expense-desc { font-size: 13px; font-weight: 500; }
+        .expense-category { font-size: 10px; color: #ff6b99; margin-top: 2px; }
+        .expense-amount { font-weight: 700; color: #f44336; }
+        .expense-actions { display: flex; gap: 8px; }
+        .edit-expense { background: none; border: none; color: #ffa500; cursor: pointer; font-size: 14px; }
+        .delete-expense { background: none; border: none; color: #ff4d4d; cursor: pointer; font-size: 14px; }
+        .expenses-list { margin-top: 5px; max-height: 250px; overflow-y: auto; }
+        .explore-section-box { background: #fff8fa; border-radius: 20px; padding: 15px; margin-bottom: 20px; border: 1px solid #ffe0ec; }
+        .explore-section-title { font-weight: 700; color: #ff4d7a; margin-bottom: 12px; font-size: 15px; display: flex; align-items: center; gap: 8px; }
+        .category-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #ffe0ec; font-size: 13px; }
+        .comments-section { margin-top: 20px; border-top: 2px solid #ffe0ec; padding-top: 15px; }
+        .comment-item { background: #fefafc; border-radius: 16px; padding: 12px; margin-bottom: 12px; border: 1px solid #f0cedd; }
+        .comment-header { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 12px; }
+        .comment-user { font-weight: 700; color: #ff4d7a; }
+        .comment-date { color: #a07a8a; font-size: 10px; }
+        .comment-text { font-size: 13px; color: #5a3f4a; margin-bottom: 8px; word-break: break-word; }
+        .comment-actions { display: flex; gap: 12px; font-size: 11px; color: #ff6b99; }
+        .comment-actions span { cursor: pointer; }
+        .reply-item { margin-left: 30px; margin-top: 10px; padding-left: 12px; border-left: 2px solid #ffd9e8; }
+        .reply-text { font-size: 12px; color: #6c5b6b; margin-top: 5px; }
+        .add-comment-form { display: flex; gap: 10px; margin-top: 15px; }
+        .add-comment-form input { flex: 1; padding: 10px 14px; border-radius: 40px; border: 1.5px solid #f0cedd; font-size: 13px; }
+        .add-comment-form button { background: #ff4d7a; border: none; padding: 8px 18px; border-radius: 40px; color: white; cursor: pointer; font-size: 12px; }
+        .reply-form { display: flex; gap: 8px; margin-top: 10px; margin-left: 30px; }
+        .reply-form input { flex: 1; padding: 8px 12px; border-radius: 30px; border: 1px solid #f0cedd; font-size: 12px; }
+        .reply-form button { background: #ffecf2; border: none; padding: 6px 15px; border-radius: 30px; color: #ff4d7a; cursor: pointer; font-size: 11px; }
+        .custom-marker { background: #ff4d7a; border: 2px solid white; border-radius: 50%; width: 12px; height: 12px; }
+        .favorite-trip-card { background: #fefafc; border-radius: 20px; padding: 15px; margin-bottom: 15px; border: 1px solid #ffe0ec; cursor: pointer; transition: all 0.2s; display: flex; gap: 12px; }
+        .favorite-trip-card:hover { background: #fff5f9; transform: translateX(5px); }
+        .favorite-img { width: 60px; height: 60px; border-radius: 15px; background: #f0cedd; overflow: hidden; flex-shrink: 0; }
+        .favorite-img img { width: 100%; height: 100%; object-fit: cover; }
+        .favorite-info { flex: 1; }
+        .remove-fav { color: #ff4d4d; cursor: pointer; font-size: 14px; }
+    </style>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+<div class="app-container">
+    <div class="app-screen" id="mainContent">
+        <!-- LANDING PAGE -->
+        <div id="landingPage">
+            <div class="logo-area"><div class="logo-icon"><img src="logotriptrace.jpeg" alt="TripTrace Logo" onerror="this.src='https://placehold.co/85x85/ff7aa2/white?text=TT'"></div><h1>TripTrace</h1><div class="logo-tagline">Your Trip, seamlessly traced</div></div>
+            <div class="slider-section"><div class="section-title"><i class="fas fa-compass"></i> Explore smart features</div><div class="card-slider">
+                <div class="info-card"><img src="Itinerary card.jpg" alt="Itinerary Planner" onerror="this.src='https://placehold.co/50x50/ff7aa2/white?text=IT'"><h3>Itinerary Planner</h3><p>Plan daily activities easily.</p></div>
+                <div class="info-card"><img src="Budget card.png" alt="Budget Tracker" onerror="this.src='https://placehold.co/50x50/4caf50/white?text=$'"><h3>Budget Tracker</h3><p>Track expenses & stay on budget.</p></div>
+                <div class="info-card"><img src="mapcard.jpg" alt="Local Gems" onerror="this.src='https://placehold.co/50x50/2196f3/white?text=🗺️'"><h3>Local Gems</h3><p>Discover top spots in Malaysia.</p></div>
+                <div class="info-card"><img src="Social card.png" alt="Social Inspiration" onerror="this.src='https://placehold.co/50x50/9c27b0/white?text=👥'"><h3>Social Inspiration</h3><p>View shared trips & ratings.</p></div>
+            </div></div>
+            <div class="btn-group"><button class="btn-primary" id="showSignupBtn">Sign Up</button><button class="btn-outline" id="showLoginBtn">Log In</button></div>
+            <footer>Plan smarter | Travel happier</footer>
+        </div>
+
+        <!-- SIGNUP & LOGIN PAGES -->
+        <div id="signupPage" class="hidden"><div class="back-link" id="backToLandingFromSignup"><i class="fas fa-arrow-left"></i> Back</div><div class="form-card"><div class="form-title">Create Account</div><div class="input-group"><label>Full Name</label><input type="text" id="signupName" placeholder="Enter you name"></div><div class="input-group"><label>Phone Number</label><input type="tel" id="signupPhone" placeholder="+60x xxxx xxxxx"></div><div class="input-group"><label>Email</label><input type="email" id="signupEmail" placeholder="xxx@gmail.com"></div><div class="input-group"><label>Password</label><input type="password" id="signupPassword" placeholder="Enter your password"></div><div class="input-group"><label>Confirm Password</label><input type="password" id="signupConfirm" placeholder="Confirm your password"></div><div id="signupError" class="error-msg"></div><button class="submit-btn" id="doSignupBtn">Sign Up →</button><div class="toggle-form">Already have an account? <span id="switchToLoginFromSignup">Log in</span></div></div></div>
+        <div id="loginPage" class="hidden"><div class="back-link" id="backToLandingFromLogin"><i class="fas fa-arrow-left"></i> Back</div><div class="form-card"><div class="form-title">Welcome Back</div><div class="input-group"><label>Email</label><input type="email" id="loginEmail" placeholder="your@email.com"></div><div class="input-group"><label>Password</label><input type="password" id="loginPassword" placeholder="Enter your password"></div><div id="loginError" class="error-msg"></div><button class="submit-btn" id="doLoginBtn">Log In →</button><div class="toggle-form">Don't have an account? <span id="switchToSignupFromLogin">Sign up</span></div></div></div>
+
+        <!-- DASHBOARD -->
+        <div id="dashboardPage" class="hidden">
+            <div id="homeView">
+                <div class="logo-area" style="margin-bottom:15px;"><div class="logo-icon" style="width:70px;height:70px;"><img src="logotriptrace.jpeg" style="width:100%;height:100%;object-fit:cover;" onerror="this.src='https://placehold.co/70x70/ff7aa2/white?text=TT'"></div><h1 style="font-size:28px;">TripTrace</h1></div>
+                <div class="welcome-banner" style="background-image: url('Welcome banner background.jpg');"><div class="overlay"></div><div class="content"><i class="fas fa-globe-asia"></i><h2 style="background: rgba(255,255,255,0.9); display: inline-block; padding: 8px 20px; border-radius: 50px; color: #ff4d7a;">Ready to explore!</h2><p id="dashboardUserName" style="margin-top:10px;">Welcome back!</p></div></div>
+                <div class="upcoming-section" style="background-image: url('Upcoming trips decoratio.jpeg');"><div class="overlay"></div><div class="content"><div class="section-title"><i class="fas fa-clock"></i> Upcoming Trips</div><div id="upcomingTripsList"></div></div></div>
+                <div class="quick-access" style="background-image: url('Quick acces background.jpeg');"><div class="overlay"></div><div class="content"><p><i class="fas fa-bolt"></i> Quick access</p><div class="chips"><span class="chip" id="quickItineraryBtn"><img src="Itinerary quick icon.png" alt="Itinerary" onerror="this.style.display='none'"><i class="fas fa-calendar-alt"></i> Itinerary</span><span class="chip" id="quickBudgetBtn"><img src="Budget quick icon.jpeg" alt="Budget" onerror="this.style.display='none'"><i class="fas fa-chart-simple"></i> Budget</span><span class="chip" id="quickMapBtn"><i class="fas fa-location-dot"></i> My Map</span></div></div></div>
+                <footer>© TripTrace — trace your journey</footer>
+            </div>
+
+            <!-- EXPLORE VIEW -->
+            <div id="exploreView" class="hidden">
+                <h2 style="margin-bottom:20px;"><i class="fas fa-compass"></i> Explore Public Trips</h2>
+                <div class="explore-search"><input type="text" id="exploreSearchInput" placeholder="Search by destination, trip name, or user..."></div>
+                <button class="filter-toggle-btn" id="filterToggleBtn"><i class="fas fa-filter"></i> Filter <i class="fas fa-chevron-down" id="filterIcon"></i></button>
+                <div class="filter-panel" id="filterPanel">
+                    <div class="filter-title"><i class="fas fa-sliders-h"></i> Filter Options</div>
+                    <div class="filter-group"><div class="filter-label">📅 Trip Duration</div><div class="duration-buttons" id="durationFilterButtons"><button class="duration-btn active" data-duration="all">All</button><button class="duration-btn" data-duration="1">1 Day</button><button class="duration-btn" data-duration="2">2 Days</button><button class="duration-btn" data-duration="3">3+ Days</button></div></div>
+                    <div class="filter-group"><div class="filter-label">💰 Max Budget (RM) <span id="budgetValue">5000</span></div><input type="range" id="budgetSlider" class="filter-slider" min="0" max="5000" step="100" value="5000"><div class="filter-values"><span>RM0</span><span>RM1000</span><span>RM2000</span><span>RM3000</span><span>RM4000</span><span>RM5000+</span></div></div>
+                    <button class="reset-filter-btn" id="resetFilterBtn"><i class="fas fa-undo-alt"></i> Reset Filters</button><div class="filter-stats" id="filterStats"></div>
+                </div>
+                <div id="publicTripsList"></div>
+            </div>
+
+            <!-- FAVORITES VIEW -->
+            <div id="favoritesView" class="hidden">
+                <h2 style="margin-bottom:20px;"><i class="fas fa-heart" style="color:#ff4d4d;"></i> My Favorite Trips</h2>
+                <div id="favoritesList"></div>
+            </div>
+
+            <!-- ADD TRIP VIEW -->
+            <div id="addTripView" class="hidden">
+                <h2 style="margin-bottom:20px;"><i class="fas fa-plus-circle"></i> Create New Trip</h2>
+                <div class="form-card">
+                    <div class="input-group"><label>Trip Name</label><input type="text" id="tripName" placeholder="e.g., Genting Weekend"></div>
+                    <div class="row-2"><div class="input-group"><label>Start Date</label><input type="date" id="tripStartDate"></div><div class="input-group"><label>End Date</label><input type="date" id="tripEndDate"></div></div>
+                    <div class="input-group"><label>Destination / Location</label><div class="search-container"><input type="text" id="locationSearch" class="search-input" placeholder="Search location in Malaysia..."><div id="suggestionsList" class="suggestions-list"></div></div><div id="map" class="map-container"></div><input type="hidden" id="tripDest"><div id="selectedLocationDisplay" class="selected-location">📍 Click on map or search to select location</div></div>
+                    <div class="input-group"><label>Trip Image</label><input type="file" id="tripImage" accept="image/*" style="display:none;"><div class="file-input-label" onclick="document.getElementById('tripImage').click()"><i class="fas fa-camera"></i> Choose Cover Image</div><div class="image-preview" id="imagePreview"></div></div>
+                    
+                    <div style="margin-top:20px; border-top:2px dashed #ffe0ec; padding-top:15px;">
+                        <div class="section-title" style="font-size:16px; margin-bottom:12px;"><i class="fas fa-wallet"></i> Budget & Expenses</div>
+                        <div class="budget-input-row"><div class="input-group"><label>Total Budget (RM)</label><input type="number" id="newTripBudget" placeholder="e.g., 1000" value="0"></div></div>
+                        <div><label style="font-size:13px; font-weight:600; color:#5a3f4a;">Expenses</label><div id="newTripExpensesList" class="expenses-list-builder"></div><button type="button" id="addExpenseToNewTripBtn" class="add-expense-btn-builder"><i class="fas fa-plus"></i> Add Expense</button></div>
+                    </div>
+                    
+                    <div class="itinerary-builder"><div class="itinerary-builder-title"><i class="fas fa-list-ol"></i> Plan Your Itinerary</div><div id="itineraryDaysBuilder"></div><button type="button" class="add-day-btn" id="addDayBuilderBtn"><i class="fas fa-plus"></i> Add New Day</button></div>
+                    <div class="btn-group-row"><button class="cancel-btn" id="cancelAddTripBtn"><i class="fas fa-times"></i> Cancel</button><button class="submit-btn" id="saveTripBtn"><i class="fas fa-save"></i> Save Trip</button></div>
+                </div>
+                <div id="addTripMsg" class="error-msg"></div>
+            </div>
+
+            <!-- TRIPS VIEW -->
+            <div id="tripsView" class="hidden"><h2 style="margin-bottom:20px;"><i class="fas fa-list"></i> My Trips</h2><div id="tripsList"></div></div>
+
+            <!-- PROFILE VIEW -->
+            <div id="profileView" class="hidden"><div id="profileContent"></div></div>
+        </div>
+    </div>
+
+    <!-- MODALS -->
+    <div id="editItineraryModal" class="modal"><div class="modal-content"><div class="modal-header"><h3><i class="fas fa-list-ul"></i> <span id="editItinTripName"></span></h3><span class="close-modal" onclick="closeEditItineraryModal()">&times;</span></div><div id="editItineraryContent"></div><button class="save-itinerary-btn" id="saveItineraryChangesBtn">💾 Save All Changes</button></div></div>
+    <div id="setBudgetModal" class="modal"><div class="modal-content"><div class="modal-header"><h3><i class="fas fa-wallet"></i> Set Trip Budget</h3><span class="close-modal" onclick="closeSetBudgetModal()">&times;</span></div><div class="input-group"><label>Total Budget (RM)</label><input type="number" id="budgetAmount" placeholder="e.g., 1000"></div><button class="submit-btn" id="saveBudgetBtn">Save Budget</button></div></div>
+    <div id="expenseModal" class="modal"><div class="modal-content"><div class="modal-header"><h3 id="expenseModalTitle"><i class="fas fa-receipt"></i> Add Expense</h3><span class="close-modal" onclick="closeExpenseModal()">&times;</span></div><div class="input-group"><label>Description</label><input type="text" id="expenseDesc" placeholder="e.g., Villa, Jetski, Hotel"></div><div class="input-group"><label>Amount (RM)</label><input type="number" id="expenseAmount" placeholder="0.00"></div><div class="input-group"><label>Category</label><select id="expenseCategory"><option value="Food">🍔 Food</option><option value="Accommodation">🏨 Accommodation</option><option value="Transport">🚗 Transport</option><option value="Activities">🎢 Activities</option><option value="Shopping">🛍️ Shopping</option><option value="Other">📌 Other</option></select></div><button class="submit-btn" id="saveExpenseBtn">Save Expense</button></div></div>
+    <div id="uploadGalleryModal" class="modal"><div class="modal-content"><div class="modal-header"><h3><i class="fas fa-images"></i> Add Photos with Captions</h3><span class="close-modal" onclick="closeUploadGalleryModal()">&times;</span></div><div id="uploadItemsContainer"></div><div class="input-group" style="margin-top:10px;"><div class="file-input-label" onclick="document.getElementById('galleryFilesInput').click()"><i class="fas fa-plus"></i> Select More Photos</div><input type="file" id="galleryFilesInput" accept="image/*" multiple style="display:none;"></div><button class="submit-btn" id="uploadGalleryBtn" style="margin-top:15px;">Upload All Photos</button></div></div>
+    <div id="imageViewerModal" class="modal image-viewer-modal"><div class="modal-content" style="background:rgba(0,0,0,0.9);"><div class="modal-header" style="border-bottom:none;position:absolute;top:10px;right:10px;"><span class="close-modal" onclick="closeImageViewer()" style="color:white;font-size:32px;">&times;</span></div><img id="viewerImage" class="fullscreen-img" src=""><div id="viewerCaption" style="position:absolute;bottom:20px;left:0;right:0;text-align:center;color:white;background:rgba(0,0,0,0.6);padding:8px;font-size:12px;"></div></div></div>
+    <div id="viewPublicTripModal" class="modal"><div class="modal-content"><div class="modal-header"><h3><i class="fas fa-globe"></i> <span id="viewPublicTripName"></span></h3><span class="close-modal" onclick="closeViewPublicTripModal()">&times;</span></div><div id="viewPublicTripContent" class="public-trip-detail"></div></div></div>
+    <div id="editModal" class="modal"><div class="modal-content"><div class="modal-header"><h3><i class="fas fa-edit"></i> Edit Trip Details</h3><span class="close-modal" onclick="closeEditModal()">&times;</span></div><div class="input-group"><label>Trip Name</label><input type="text" id="editTripName"></div><div class="row-2"><div class="input-group"><label>Start Date</label><input type="date" id="editStartDate"></div><div class="input-group"><label>End Date</label><input type="date" id="editEndDate"></div></div><div class="input-group"><label>Destination</label><input type="text" id="editDestination"></div><button class="submit-btn" id="updateTripBtn">Update Trip</button></div></div>
+    
+    <div id="editProfileModal" class="modal"><div class="modal-content"><div class="modal-header"><h3><i class="fas fa-user-edit"></i> Edit Profile</h3><span class="close-modal" onclick="closeEditProfileModal()">&times;</span></div><div class="input-group"><label>Full Name</label><input type="text" id="editFullName" placeholder="Your full name"></div><div class="input-group"><label>Phone Number</label><input type="tel" id="editPhone" placeholder="+6012 345 6789"></div><div class="input-group"><label>Email</label><input type="email" id="editEmail" placeholder="your@email.com" readonly style="background:#f5f5f5;"></div><div class="input-group"><label>New Password (leave blank to keep current)</label><input type="password" id="editPassword" placeholder="••••••••"></div><div class="avatar-colors" id="avatarColors"><div class="avatar-color" style="background:#ff7aa2;" data-color="#ff7aa2"></div><div class="avatar-color" style="background:#ffb347;" data-color="#ffb347"></div><div class="avatar-color" style="background:#4caf50;" data-color="#4caf50"></div><div class="avatar-color" style="background:#2196f3;" data-color="#2196f3"></div><div class="avatar-color" style="background:#9c27b0;" data-color="#9c27b0"></div><div class="avatar-color" style="background:#ff5722;" data-color="#ff5722"></div></div><button class="submit-btn" id="saveProfileBtn">Save Changes</button><button class="danger-btn" id="deleteAccountBtn">Delete Account</button></div></div>
+
+    <!-- BOTTOM NAVIGATION -->
+    <div class="bottom-nav" id="bottomNav" style="display:none;">
+        <div class="nav-item" data-nav="home"><i class="fas fa-home"></i><span class="nav-label">Home</span></div>
+        <div class="nav-item" data-nav="explore"><i class="fas fa-search"></i><span class="nav-label">Explore</span></div>
+        <div class="nav-item" data-nav="favorites"><i class="fas fa-heart"></i><span class="nav-label">Favorites</span></div>
+        <div class="nav-item" data-nav="add"><i class="fas fa-plus-circle"></i><span class="nav-label">Add</span></div>
+        <div class="nav-item" data-nav="trips"><i class="fas fa-suitcase"></i><span class="nav-label">Trips</span></div>
+        <div class="nav-item" data-nav="profile"><i class="fas fa-user"></i><span class="nav-label">Profile</span></div>
+    </div>
+</div>
+
+<script>
+    // ========== DOM Elements ==========
+    const landing = document.getElementById('landingPage');
+    const signupPage = document.getElementById('signupPage');
+    const loginPage = document.getElementById('loginPage');
+    const dashboardPage = document.getElementById('dashboardPage');
+    const bottomNav = document.getElementById('bottomNav');
+    const homeView = document.getElementById('homeView');
+    const exploreView = document.getElementById('exploreView');
+    const favoritesView = document.getElementById('favoritesView');
+    const addTripView = document.getElementById('addTripView');
+    const tripsView = document.getElementById('tripsView');
+    const profileView = document.getElementById('profileView');
+    const profileContent = document.getElementById('profileContent');
+    const favoritesList = document.getElementById('favoritesList');
+    
+    const showSignupBtn = document.getElementById('showSignupBtn');
+    const showLoginBtn = document.getElementById('showLoginBtn');
+    const backToLandingFromSignup = document.getElementById('backToLandingFromSignup');
+    const backToLandingFromLogin = document.getElementById('backToLandingFromLogin');
+    const switchToLoginFromSignup = document.getElementById('switchToLoginFromSignup');
+    const switchToSignupFromLogin = document.getElementById('switchToSignupFromLogin');
+    const doSignupBtn = document.getElementById('doSignupBtn');
+    const doLoginBtn = document.getElementById('doLoginBtn');
+    const saveTripBtn = document.getElementById('saveTripBtn');
+    const cancelAddTripBtn = document.getElementById('cancelAddTripBtn');
+    const addDayBuilderBtn = document.getElementById('addDayBuilderBtn');
+    const addExpenseToNewTripBtn = document.getElementById('addExpenseToNewTripBtn');
+    const newTripBudget = document.getElementById('newTripBudget');
+    const newTripExpensesList = document.getElementById('newTripExpensesList');
+
+    const signupName = document.getElementById('signupName');
+    const signupPhone = document.getElementById('signupPhone');
+    const signupEmail = document.getElementById('signupEmail');
+    const signupPassword = document.getElementById('signupPassword');
+    const signupConfirm = document.getElementById('signupConfirm');
+    const loginEmail = document.getElementById('loginEmail');
+    const loginPassword = document.getElementById('loginPassword');
+    const signupError = document.getElementById('signupError');
+    const loginError = document.getElementById('loginError');
+    const dashboardUserName = document.getElementById('dashboardUserName');
+    const tripsListDiv = document.getElementById('tripsList');
+    const upcomingTripsList = document.getElementById('upcomingTripsList');
+    const publicTripsList = document.getElementById('publicTripsList');
+    const exploreSearchInput = document.getElementById('exploreSearchInput');
+    const tripImageInput = document.getElementById('tripImage');
+    const imagePreview = document.getElementById('imagePreview');
+    const tripDestInput = document.getElementById('tripDest');
+    const selectedLocationDisplay = document.getElementById('selectedLocationDisplay');
+    const locationSearch = document.getElementById('locationSearch');
+    const suggestionsList = document.getElementById('suggestionsList');
+    const itineraryDaysBuilder = document.getElementById('itineraryDaysBuilder');
+
+    const setBudgetModal = document.getElementById('setBudgetModal');
+    const budgetAmountInput = document.getElementById('budgetAmount');
+    const saveBudgetBtn = document.getElementById('saveBudgetBtn');
+    const expenseModal = document.getElementById('expenseModal');
+    const expenseDesc = document.getElementById('expenseDesc');
+    const expenseAmount = document.getElementById('expenseAmount');
+    const expenseCategory = document.getElementById('expenseCategory');
+    const saveExpenseBtn = document.getElementById('saveExpenseBtn');
+    const expenseModalTitle = document.getElementById('expenseModalTitle');
+    const editProfileModal = document.getElementById('editProfileModal');
+    const editFullName = document.getElementById('editFullName');
+    const editPhone = document.getElementById('editPhone');
+    const editEmail = document.getElementById('editEmail');
+    const editPassword = document.getElementById('editPassword');
+    const saveProfileBtn = document.getElementById('saveProfileBtn');
+    const deleteAccountBtn = document.getElementById('deleteAccountBtn');
+
+    const filterToggleBtn = document.getElementById('filterToggleBtn');
+    const filterPanel = document.getElementById('filterPanel');
+    const budgetSlider = document.getElementById('budgetSlider');
+    const budgetValue = document.getElementById('budgetValue');
+    const resetFilterBtn = document.getElementById('resetFilterBtn');
+    const filterStats = document.getElementById('filterStats');
+    
+    let registeredUsers = [];
+    let currentUser = null;
+    let userTrips = {};
+    let map = null;
+    let marker = null;
+    let selectedLocation = { lat: 4.2105, lng: 101.9758, name: "Malaysia" };
+    let editTripId = null;
+    let currentEditTripId = null;
+    let currentGalleryTripId = null;
+    let editingExpenseIndex = null;
+    let pendingUploads = [];
+    let searchTimeout = null;
+    let tempItinerary = [];
+    let tempExpenses = [];
+    let tempBudget = 0;
+    let currentEditTripIdForBudget = null;
+    let currentEditTripIdForExpense = null;
+    let selectedAvatarColor = '#ff7aa2';
+    
+    let selectedDuration = 'all';
+    let maxBudget = 5000;
+    let allPublicTripsCache = [];
+
+    // ========== Favorite Functions ==========
+    function toggleFavorite(tripId, userEmail) {
+        if (!currentUser) return;
+        let favorites = JSON.parse(localStorage.getItem('triptrace_favorites') || '{}');
+        const key = `${currentUser.email}_${tripId}_${userEmail}`;
+        if (favorites[key]) {
+            delete favorites[key];
+        } else {
+            const trip = userTrips[userEmail]?.find(t => t.id === tripId);
+            if (trip) {
+                favorites[key] = { tripId, userEmail, tripName: trip.name, destination: trip.destination, image: trip.image, userName: trip.userName || userEmail.split('@')[0] };
+            }
+        }
+        localStorage.setItem('triptrace_favorites', JSON.stringify(favorites));
+        renderPublicTrips();
+        renderFavorites();
+    }
+    
+    function isFavorite(tripId, userEmail) {
+        if (!currentUser) return false;
+        const favorites = JSON.parse(localStorage.getItem('triptrace_favorites') || '{}');
+        return !!favorites[`${currentUser.email}_${tripId}_${userEmail}`];
+    }
+    
+    function renderFavorites() {
+        if (!favoritesList) return;
+        const favorites = JSON.parse(localStorage.getItem('triptrace_favorites') || '{}');
+        const userFavs = Object.values(favorites).filter(f => f.userEmail && f.tripId);
+        
+        if (userFavs.length === 0) {
+            favoritesList.innerHTML = '<div class="empty-state"><i class="fas fa-heart-broken"></i><p>No favorite trips yet. Tap the heart icon on any public trip to save it!</p></div>';
+            return;
+        }
+        
+        favoritesList.innerHTML = userFavs.map(fav => `
+            <div class="favorite-trip-card" data-trip-id="${fav.tripId}" data-user-email="${fav.userEmail}">
+                <div class="favorite-img">${fav.image ? `<img src="${fav.image}" alt="${fav.tripName}">` : `<i class="fas fa-image" style="font-size:30px; display:flex; align-items:center; justify-content:center; height:100%;"></i>`}</div>
+                <div class="favorite-info"><strong>${escapeHtml(fav.tripName)}</strong><br>📍 ${escapeHtml(fav.destination)}<br>👤 ${escapeHtml(fav.userName)}</div>
+                <div class="remove-fav" onclick="event.stopPropagation(); removeFavorite('${fav.tripId}', '${fav.userEmail}')"><i class="fas fa-trash-alt"></i></div>
+            </div>
+        `).join('');
+        
+        document.querySelectorAll('.favorite-trip-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const tripId = parseInt(card.dataset.tripId);
+                const userEmail = card.dataset.userEmail;
+                const trip = userTrips[userEmail]?.find(t => t.id === tripId);
+                if (trip) openViewPublicTripModal(trip, userEmail);
+            });
+        });
+    }
+    
+    function removeFavorite(tripId, userEmail) {
+        let favorites = JSON.parse(localStorage.getItem('triptrace_favorites') || '{}');
+        delete favorites[`${currentUser.email}_${tripId}_${userEmail}`];
+        localStorage.setItem('triptrace_favorites', JSON.stringify(favorites));
+        renderFavorites();
+        renderPublicTrips();
+    }
+
+    // ========== Helper Functions ==========
+    function isTripFullyCompletedByChecklist(trip) {
+        if (!trip.itinerary || trip.itinerary.length === 0) return false;
+        let allActivities = [];
+        trip.itinerary.forEach(day => { if (day.activities) allActivities = allActivities.concat(day.activities); });
+        if (allActivities.length === 0) return false;
+        return allActivities.every(act => act.completed === true);
+    }
+    
+    function calculateTripDuration(startDate, endDate) {
+        if (!startDate || !endDate) return 0;
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        const diffTime = Math.abs(end - start);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+        return diffDays;
+    }
+    
+    function calculateDateProgress(startDate, endDate) {
+        const today = new Date();
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        if (today < start) return 0;
+        if (today > end) return 100;
+        const total = end - start;
+        const elapsed = today - start;
+        return Math.min(100, Math.max(0, Math.floor((elapsed / total) * 100)));
+    }
+    
+    function isTripFullyCompleted(trip) { return isTripFullyCompletedByChecklist(trip); }
+    
+    // ========== RATING FUNCTIONS ==========
+    function rateTrip(tripId, userEmail, rating) {
+        if (!userTrips[userEmail]) return;
+        const trip = userTrips[userEmail].find(t => t.id === tripId);
+        if (trip && currentUser) {
+            if (!trip.ratings) trip.ratings = [];
+            const existingRating = trip.ratings.find(r => r.userEmail === currentUser.email);
+            if (existingRating) {
+                existingRating.rating = rating;
+            } else {
+                trip.ratings.push({ userEmail: currentUser.email, rating: rating, userName: currentUser.fullName });
+            }
+            localStorage.setItem('triptrace_user_trips', JSON.stringify(userTrips));
+            renderPublicTrips();
+        }
+    }
+    
+    function getAverageRating(trip) {
+        if (!trip.ratings || trip.ratings.length === 0) return 0;
+        const sum = trip.ratings.reduce((a, b) => a + b.rating, 0);
+        return sum / trip.ratings.length;
+    }
+    
+    function getUserRating(trip) {
+        if (!trip.ratings || !currentUser) return 0;
+        const userRating = trip.ratings.find(r => r.userEmail === currentUser.email);
+        return userRating ? userRating.rating : 0;
+    }
+    
+    // ========== COMMENT FUNCTIONS ==========
+    function addComment(tripId, userEmail, commentText) {
+        if (!userTrips[userEmail] || !commentText.trim()) return;
+        const trip = userTrips[userEmail].find(t => t.id === tripId);
+        if (trip && currentUser) {
+            if (!trip.comments) trip.comments = [];
+            trip.comments.push({
+                id: Date.now(),
+                userEmail: currentUser.email,
+                userName: currentUser.fullName,
+                text: commentText.trim(),
+                date: new Date().toISOString(),
+                replies: []
+            });
+            localStorage.setItem('triptrace_user_trips', JSON.stringify(userTrips));
+            renderPublicTrips();
+            const modal = document.getElementById('viewPublicTripModal');
+            if (modal.style.display === 'flex') {
+                const tripData = userTrips[userEmail]?.find(t => t.id === tripId);
+                if (tripData) openViewPublicTripModal(tripData, userEmail);
+            }
+        }
+    }
+    
+    function addReply(tripId, userEmail, commentId, replyText) {
+        if (!userTrips[userEmail] || !replyText.trim()) return;
+        const trip = userTrips[userEmail].find(t => t.id === tripId);
+        if (trip && trip.comments && currentUser) {
+            const comment = trip.comments.find(c => c.id === commentId);
+            if (comment) {
+                if (!comment.replies) comment.replies = [];
+                comment.replies.push({
+                    id: Date.now(),
+                    userEmail: currentUser.email,
+                    userName: currentUser.fullName,
+                    text: replyText.trim(),
+                    date: new Date().toISOString()
+                });
+                localStorage.setItem('triptrace_user_trips', JSON.stringify(userTrips));
+                renderPublicTrips();
+                const modal = document.getElementById('viewPublicTripModal');
+                if (modal.style.display === 'flex') {
+                    const tripData = userTrips[userEmail]?.find(t => t.id === tripId);
+                    if (tripData) openViewPublicTripModal(tripData, userEmail);
+                }
+            }
+        }
+    }
+    
+    // ========== Map Functions ==========
+    function initMap() { if(map) return; map = L.map('map').setView([4.2105,101.9758],6.5); L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{attribution:'&copy; OSM'}).addTo(map); map.on('click',function(e){ updateMarker(e.latlng.lat,e.latlng.lng); getLocationName(e.latlng.lat,e.latlng.lng); }); }
+    function updateMarker(lat,lng){ if(marker) map.removeLayer(marker); marker = L.marker([lat,lng]).addTo(map); selectedLocation = {lat,lng,name:`${lat.toFixed(4)}, ${lng.toFixed(4)}`}; tripDestInput.value=selectedLocation.name; }
+    function getLocationName(lat,lng){ fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=10&addressdetails=1`).then(res=>res.json()).then(data=>{ const city=data.address?.city||data.address?.town||data.address?.state||"Malaysia"; selectedLocation.name=city; tripDestInput.value=city; selectedLocationDisplay.innerHTML=`📍 ${city}`; }).catch(()=>{ selectedLocationDisplay.innerHTML=`📍 ${lat.toFixed(4)}, ${lng.toFixed(4)}`; }); }
+    function searchLocationSuggestions(query){ if(!query||query.length<2){ suggestionsList.style.display='none'; return; } fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}, Malaysia&limit=5`).then(res=>res.json()).then(data=>{ if(data&&data.length>0){ suggestionsList.innerHTML=data.map(item=>`<div class="suggestion-item" data-lat="${item.lat}" data-lon="${item.lon}" data-name="${item.display_name.split(',')[0]}"><i class="fas fa-map-marker-alt"></i> ${item.display_name.substring(0,60)}</div>`).join(''); suggestionsList.style.display='block'; document.querySelectorAll('.suggestion-item').forEach(el=>{ el.addEventListener('click',()=>{ const lat=parseFloat(el.dataset.lat),lon=parseFloat(el.dataset.lon),name=el.dataset.name; map.setView([lat,lon],12); updateMarker(lat,lon); selectedLocation.name=name; tripDestInput.value=name; selectedLocationDisplay.innerHTML=`📍 ${name}`; locationSearch.value=name; suggestionsList.style.display='none'; }); }); } else { suggestionsList.style.display='none'; } }).catch(()=>{ suggestionsList.style.display='none'; }); }
+    locationSearch?.addEventListener('input',(e)=>{ if(searchTimeout) clearTimeout(searchTimeout); searchTimeout=setTimeout(()=>searchLocationSuggestions(e.target.value),300); });
+    document.addEventListener('click',(e)=>{ if(!locationSearch?.contains(e.target)&&!suggestionsList?.contains(e.target)) suggestionsList.style.display='none'; });
+
+    // ========== Itinerary Builder ==========
+    function renderItineraryBuilder(){ if(!itineraryDaysBuilder) return; itineraryDaysBuilder.innerHTML=''; tempItinerary.forEach((day,dayIdx)=>{ const dayDiv=document.createElement('div'); dayDiv.className='itinerary-day-card'; dayDiv.innerHTML=`<div class="day-header-builder"><input type="text" class="day-title-input" value="${escapeHtml(day.title)}" data-day="${dayIdx}" placeholder="Day ${dayIdx+1}"><button class="remove-day-btn" data-day="${dayIdx}"><i class="fas fa-trash-alt"></i></button></div><div class="activities-list" id="activities-list-${dayIdx}">${(day.activities||[]).map((act,actIdx)=>`<div class="activity-item-builder" data-day="${dayIdx}" data-act="${actIdx}"><div class="activity-info"><input type="time" class="activity-time-input" value="${act.time}" data-day="${dayIdx}" data-act="${actIdx}"><input type="text" class="activity-text-input" value="${escapeHtml(act.activity)}" data-day="${dayIdx}" data-act="${actIdx}" placeholder="e.g., Visit Batu Caves"></div><button class="delete-activity-btn" data-day="${dayIdx}" data-act="${actIdx}"><i class="fas fa-times-circle"></i></button></div>`).join('')}</div><button class="add-activity-btn-builder" data-day="${dayIdx}"><i class="fas fa-plus"></i> Add Activity</button>`; itineraryDaysBuilder.appendChild(dayDiv); }); document.querySelectorAll('.day-title-input').forEach(inp=>inp.addEventListener('change',(e)=>{ const d=parseInt(e.target.dataset.day); if(tempItinerary[d]) tempItinerary[d].title=e.target.value; })); document.querySelectorAll('.remove-day-btn').forEach(btn=>btn.addEventListener('click',(e)=>{ const d=parseInt(btn.dataset.day); tempItinerary.splice(d,1); renderItineraryBuilder(); })); document.querySelectorAll('.activity-time-input').forEach(inp=>inp.addEventListener('change',(e)=>{ const d=parseInt(inp.dataset.day),a=parseInt(inp.dataset.act); if(tempItinerary[d]?.activities[a]) tempItinerary[d].activities[a].time=e.target.value; })); document.querySelectorAll('.activity-text-input').forEach(inp=>inp.addEventListener('change',(e)=>{ const d=parseInt(inp.dataset.day),a=parseInt(inp.dataset.act); if(tempItinerary[d]?.activities[a]) tempItinerary[d].activities[a].activity=e.target.value; })); document.querySelectorAll('.delete-activity-btn').forEach(btn=>btn.addEventListener('click',(e)=>{ const d=parseInt(btn.dataset.day),a=parseInt(btn.dataset.act); if(tempItinerary[d]?.activities[a]){ tempItinerary[d].activities.splice(a,1); renderItineraryBuilder(); } })); document.querySelectorAll('.add-activity-btn-builder').forEach(btn=>btn.addEventListener('click',(e)=>{ const d=parseInt(btn.dataset.day); if(tempItinerary[d]){ if(!tempItinerary[d].activities) tempItinerary[d].activities=[]; tempItinerary[d].activities.push({time:"09:00", activity:"", completed:false}); renderItineraryBuilder(); } })); }
+    function addNewDayBuilder(){ tempItinerary.push({ title: `Day ${tempItinerary.length+1}`, activities: [] }); renderItineraryBuilder(); }
+    addDayBuilderBtn?.addEventListener('click',addNewDayBuilder);
+    function resetItineraryBuilder(){ tempItinerary=[]; renderItineraryBuilder(); }
+    
+    // ========== New Trip Budget & Expenses UI ==========
+    function renderNewTripExpenses() {
+        if (!newTripExpensesList) return;
+        newTripExpensesList.innerHTML = '';
+        tempExpenses.forEach((exp, idx) => {
+            const expDiv = document.createElement('div');
+            expDiv.className = 'expense-item-row';
+            expDiv.innerHTML = `<input type="text" class="expense-desc-input" placeholder="Description" value="${escapeHtml(exp.description)}" data-idx="${idx}" data-field="desc"><input type="number" class="expense-amount-input" placeholder="Amount" value="${exp.amount}" data-idx="${idx}" data-field="amount"><select class="expense-cat-select" data-idx="${idx}" data-field="cat"><option value="Food" ${exp.category === 'Food' ? 'selected' : ''}>🍔 Food</option><option value="Accommodation" ${exp.category === 'Accommodation' ? 'selected' : ''}>🏨 Accommodation</option><option value="Transport" ${exp.category === 'Transport' ? 'selected' : ''}>🚗 Transport</option><option value="Activities" ${exp.category === 'Activities' ? 'selected' : ''}>🎢 Activities</option><option value="Shopping" ${exp.category === 'Shopping' ? 'selected' : ''}>🛍️ Shopping</option><option value="Other" ${exp.category === 'Other' ? 'selected' : ''}>📌 Other</option></select><button class="remove-expense-btn" data-idx="${idx}"><i class="fas fa-trash-alt"></i></button>`;
+            newTripExpensesList.appendChild(expDiv);
+        });
+        document.querySelectorAll('.expense-desc-input').forEach(inp => { inp.addEventListener('change', (e) => { const idx = parseInt(inp.dataset.idx); if (tempExpenses[idx]) tempExpenses[idx].description = inp.value; }); });
+        document.querySelectorAll('.expense-amount-input').forEach(inp => { inp.addEventListener('change', (e) => { const idx = parseInt(inp.dataset.idx); if (tempExpenses[idx]) tempExpenses[idx].amount = parseFloat(inp.value) || 0; }); });
+        document.querySelectorAll('.expense-cat-select').forEach(sel => { sel.addEventListener('change', (e) => { const idx = parseInt(sel.dataset.idx); if (tempExpenses[idx]) tempExpenses[idx].category = sel.value; }); });
+        document.querySelectorAll('.remove-expense-btn').forEach(btn => { btn.addEventListener('click', (e) => { const idx = parseInt(btn.dataset.idx); tempExpenses.splice(idx, 1); renderNewTripExpenses(); }); });
+    }
+    addExpenseToNewTripBtn?.addEventListener('click', () => { tempExpenses.push({ description: '', amount: 0, category: 'Food' }); renderNewTripExpenses(); });
+    function resetNewTripBudgetExpenses() { tempBudget = 0; tempExpenses = []; if (newTripBudget) newTripBudget.value = ''; renderNewTripExpenses(); }
+    function cancelAddTrip(){ document.getElementById('tripName').value=''; document.getElementById('tripStartDate').value=''; document.getElementById('tripEndDate').value=''; tripDestInput.value=''; currentImageData=null; imagePreview.innerHTML=''; locationSearch.value=''; if(marker) map.removeLayer(marker); selectedLocation={lat:4.2105,lng:101.9758,name:"Malaysia"}; selectedLocationDisplay.innerHTML='📍 Click on map or search to select location'; tempItinerary=[]; renderItineraryBuilder(); resetNewTripBudgetExpenses(); document.getElementById('addTripMsg').innerText=''; switchToHomeView(); }
+    cancelAddTripBtn?.addEventListener('click',cancelAddTrip);
+
+    // ========== Navigation ==========
+    function showLanding(){ landing.classList.remove('hidden'); signupPage.classList.add('hidden'); loginPage.classList.add('hidden'); dashboardPage.classList.add('hidden'); bottomNav.style.display='none'; clearForms(); }
+    function showSignup(){ landing.classList.add('hidden'); signupPage.classList.remove('hidden'); loginPage.classList.add('hidden'); dashboardPage.classList.add('hidden'); bottomNav.style.display='none'; signupError.innerText=''; }
+    function showLogin(){ landing.classList.add('hidden'); signupPage.classList.add('hidden'); loginPage.classList.remove('hidden'); dashboardPage.classList.add('hidden'); bottomNav.style.display='none'; loginError.innerText=''; }
+    function updateNavActive(active){ document.querySelectorAll('.nav-item').forEach(item=>{ if(item.dataset.nav===active) item.classList.add('active'); else item.classList.remove('active'); }); }
+    function switchToHomeView(){ homeView.classList.remove('hidden'); exploreView.classList.add('hidden'); favoritesView.classList.add('hidden'); addTripView.classList.add('hidden'); tripsView.classList.add('hidden'); profileView.classList.add('hidden'); updateNavActive('home'); renderUpcomingTrips(); }
+    function switchToFavoritesView(){ homeView.classList.add('hidden'); exploreView.classList.add('hidden'); favoritesView.classList.remove('hidden'); addTripView.classList.add('hidden'); tripsView.classList.add('hidden'); profileView.classList.add('hidden'); updateNavActive('favorites'); renderFavorites(); }
+    function renderUpcomingTrips(){ if(!upcomingTripsList) return; const trips=userTrips[currentUser?.email]||[]; const today=new Date().toISOString().split('T')[0]; const upcoming=trips.filter(t=>t.endDate>=today).sort((a,b)=>a.startDate.localeCompare(b.startDate)); if(upcoming.length===0){ upcomingTripsList.innerHTML='<div class="empty-state" style="padding:20px;"><i class="fas fa-calendar-day"></i><p>No upcoming trips. Tap + to add!</p></div>'; return; } upcomingTripsList.innerHTML=upcoming.map(trip=>{ const progress=calculateDateProgress(trip.startDate,trip.endDate); const duration=calculateTripDuration(trip.startDate,trip.endDate); const tripImage = trip.image ? trip.image : 'Trip thumbnail.jpeg'; return `<div class="upcoming-card"><div class="upcoming-img"><img src="${tripImage}" onerror="this.src='https://placehold.co/70x70/ff7aa2/white?text=${encodeURIComponent(trip.name.substring(0,3))}'" style="width:70px; height:70px; object-fit:cover; border-radius:20px;"></div><div class="upcoming-info"><h4>${escapeHtml(trip.name)}</h4><p>📍 ${escapeHtml(trip.destination)}</p><div class="progress-bar"><div class="progress-fill" style="width:${progress}%"></div></div><div class="trip-date"><i class="fas fa-calendar"></i> ${trip.startDate} to ${trip.endDate} (${duration} days) • ${progress}% completed</div></div></div>`; }).join(''); }
+    function calculateDayCompletion(day){ if(!day.activities||day.activities.length===0) return 0; const completed=day.activities.filter(act=>act.completed===true).length; return Math.floor((completed/day.activities.length)*100); }
+    function toggleTripPrivacy(tripId){ const trips=userTrips[currentUser.email]; const trip=trips.find(t=>t.id===tripId); if(trip&&isTripFullyCompletedByChecklist(trip)){ const newPrivacy=trip.privacy==='public'?'private':'public'; trip.privacy=newPrivacy; localStorage.setItem('triptrace_user_trips',JSON.stringify(userTrips)); renderTrips(); renderPublicTrips(); renderProfile(); } }
+
+    // ========== Budget Functions ==========
+    function getCategoryExpenses(expenses){ const cats={Food:0,Accommodation:0,Transport:0,Activities:0,Shopping:0,Other:0}; expenses?.forEach(e=>{ if(cats[e.category]!==undefined) cats[e.category]+=e.amount; else cats.Other+=e.amount; }); return cats; }
+    function getCategoryIcon(category){ const icons={'Food':'🍔','Accommodation':'🏨','Transport':'🚗','Activities':'🎢','Shopping':'🛍️','Other':'📌'}; return icons[category]||'📌'; }
+    function openSetBudgetModal(tripId){ const trips=userTrips[currentUser.email]; const trip=trips.find(t=>t.id===tripId); if(trip){ budgetAmountInput.value=trip.budget||''; currentEditTripIdForBudget=tripId; setBudgetModal.style.display='flex'; } }
+    function closeSetBudgetModal(){ setBudgetModal.style.display='none'; currentEditTripIdForBudget=null; }
+    saveBudgetBtn?.addEventListener('click',function(){ const amount=parseFloat(budgetAmountInput.value); if(isNaN(amount)||amount<=0){ alert('Please enter a valid budget amount'); return; } const trips=userTrips[currentUser.email]; const trip=trips.find(t=>t.id===currentEditTripIdForBudget); if(trip){ trip.budget=amount; localStorage.setItem('triptrace_user_trips',JSON.stringify(userTrips)); if(currentEditTripId===currentEditTripIdForBudget){ renderEditableItinerary(trip); } renderTrips(); renderUpcomingTrips(); renderPublicTrips(); renderProfile(); closeSetBudgetModal(); } });
+    function openAddExpenseModal(tripId,expenseIndex=null){ const trips=userTrips[currentUser.email]; const trip=trips.find(t=>t.id===tripId); if(trip){ editingExpenseIndex=expenseIndex; currentEditTripIdForExpense=tripId; if(expenseIndex!==null&&trip.expenses&&trip.expenses[expenseIndex]){ const exp=trip.expenses[expenseIndex]; expenseModalTitle.innerHTML='<i class="fas fa-edit"></i> Edit Expense'; expenseDesc.value=exp.description; expenseAmount.value=exp.amount; expenseCategory.value=exp.category; }else{ expenseModalTitle.innerHTML='<i class="fas fa-receipt"></i> Add Expense'; expenseDesc.value=''; expenseAmount.value=''; expenseCategory.value='Food'; } expenseModal.style.display='flex'; } }
+    function closeExpenseModal(){ expenseModal.style.display='none'; editingExpenseIndex=null; currentEditTripIdForExpense=null; }
+    saveExpenseBtn?.addEventListener('click',function(){ const desc=expenseDesc.value.trim(); const amount=parseFloat(expenseAmount.value); const category=expenseCategory.value; if(!desc||isNaN(amount)||amount<=0){ alert('Please fill description and valid amount'); return; } const trips=userTrips[currentUser.email]; const trip=trips.find(t=>t.id===currentEditTripIdForExpense); if(trip){ if(!trip.expenses) trip.expenses=[]; if(editingExpenseIndex!==null){ trip.expenses[editingExpenseIndex]={description:desc,amount,category}; }else{ trip.expenses.push({description:desc,amount,category}); } localStorage.setItem('triptrace_user_trips',JSON.stringify(userTrips)); if(currentEditTripId===currentEditTripIdForExpense){ renderEditableItinerary(trip); } renderTrips(); renderPublicTrips(); closeExpenseModal(); } });
+    function deleteExpense(tripId,expenseIndex){ if(confirm('Delete this expense?')){ const trips=userTrips[currentUser.email]; const trip=trips.find(t=>t.id===tripId); if(trip&&trip.expenses){ trip.expenses.splice(expenseIndex,1); localStorage.setItem('triptrace_user_trips',JSON.stringify(userTrips)); if(currentEditTripId===tripId){ renderEditableItinerary(trip); } renderTrips(); renderPublicTrips(); } } }
+
+    // ========== Gallery Functions ==========
+    function openUploadGalleryModal(tripId){ currentGalleryTripId=tripId; pendingUploads=[]; renderUploadItems(); document.getElementById('uploadGalleryModal').style.display='flex'; }
+    function renderUploadItems(){ const container=document.getElementById('uploadItemsContainer'); if(pendingUploads.length===0){ container.innerHTML='<div class="no-gallery" style="padding:20px;">Select photos to upload</div>'; return; } container.innerHTML=pendingUploads.map((item,idx)=>`<div class="upload-item"><img src="${item.preview}" class="upload-img-preview"><input type="text" class="upload-caption-input" placeholder="Write a caption..." data-idx="${idx}" value="${escapeHtml(item.caption)}"></div>`).join(''); document.querySelectorAll('.upload-caption-input').forEach(inp=>{ inp.addEventListener('change',(e)=>{ const idx=parseInt(inp.dataset.idx); if(pendingUploads[idx]) pendingUploads[idx].caption=inp.value; }); }); }
+    document.getElementById('galleryFilesInput')?.addEventListener('change',function(e){ const files=Array.from(e.target.files); files.forEach(file=>{ const reader=new FileReader(); reader.onload=function(ev){ pendingUploads.push({file:file,preview:ev.target.result,caption:''}); renderUploadItems(); }; reader.readAsDataURL(file); }); e.target.value=''; });
+    document.getElementById('uploadGalleryBtn')?.addEventListener('click',function(){ if(pendingUploads.length===0){ alert('Please select photos'); return; } const trips=userTrips[currentUser.email]; const trip=trips.find(t=>t.id===currentGalleryTripId); if(trip){ if(!trip.gallery) trip.gallery=[]; pendingUploads.forEach(item=>{ trip.gallery.push({image:item.preview,caption:item.caption}); }); localStorage.setItem('triptrace_user_trips',JSON.stringify(userTrips)); if(currentEditTripId===currentGalleryTripId){ const updatedTrip=trips.find(t=>t.id===currentGalleryTripId); renderEditableItinerary(updatedTrip); } renderTrips(); renderPublicTrips(); } pendingUploads=[]; closeUploadGalleryModal(); });
+    function closeUploadGalleryModal(){ document.getElementById('uploadGalleryModal').style.display='none'; currentGalleryTripId=null; pendingUploads=[]; }
+    function deleteGalleryImage(tripId,imgIndex){ const trips=userTrips[currentUser.email]; const trip=trips.find(t=>t.id===tripId); if(trip&&trip.gallery){ trip.gallery.splice(imgIndex,1); localStorage.setItem('triptrace_user_trips',JSON.stringify(userTrips)); if(currentEditTripId===tripId) renderEditableItinerary(trip); renderTrips(); renderPublicTrips(); } }
+    function updateGalleryCaption(tripId,imgIndex,newCaption){ const trips=userTrips[currentUser.email]; const trip=trips.find(t=>t.id===tripId); if(trip&&trip.gallery&&trip.gallery[imgIndex]){ trip.gallery[imgIndex].caption=newCaption; localStorage.setItem('triptrace_user_trips',JSON.stringify(userTrips)); if(currentEditTripId===tripId) renderEditableItinerary(trip); renderTrips(); renderPublicTrips(); } }
+    function openImageViewer(imgSrc,caption){ document.getElementById('viewerImage').src=imgSrc; document.getElementById('viewerCaption').innerText=caption||''; document.getElementById('imageViewerModal').style.display='flex'; }
+    function closeImageViewer(){ document.getElementById('imageViewerModal').style.display='none'; }
+    function editCaption(tripId,imgIndex,currentCaption){ const newCaption=prompt('Edit caption:',currentCaption); if(newCaption!==null) updateGalleryCaption(tripId,imgIndex,newCaption); }
+
+    // ========== Main Itinerary Modal ==========
+    function openEditItineraryModal(tripId){ const trips=userTrips[currentUser.email]; const trip=trips.find(t=>t.id===tripId); if(trip){ currentEditTripId=tripId; document.getElementById('editItinTripName').innerHTML=`${escapeHtml(trip.name)} <button class="upload-gallery-btn" onclick="event.stopPropagation(); openSetBudgetModal(${tripId})"><i class="fas fa-wallet"></i> Set Budget</button> <button class="upload-gallery-btn" onclick="event.stopPropagation(); openUploadGalleryModal(${tripId})"><i class="fas fa-camera"></i> Add Photos</button>`; renderEditableItinerary(trip); document.getElementById('editItineraryModal').style.display='flex'; } }
+    function renderEditableItinerary(trip){ const container=document.getElementById('editItineraryContent'); let html=''; const totalSpent=trip.expenses?trip.expenses.reduce((s,e)=>s+e.amount,0):0; const budget=trip.budget||0; const remaining=budget-totalSpent; const percentUsed=budget>0?(totalSpent/budget)*100:0; let budgetClass=''; if(percentUsed>=100) budgetClass='budget-danger'; else if(percentUsed>=80) budgetClass='budget-warning'; html+=`<div class="budget-section"><div class="budget-summary ${budgetClass}"><div class="budget-amount"><span class="budget-label">💰 Total Budget</span><span class="budget-value">RM ${budget.toFixed(2)}</span></div><div class="budget-amount"><span class="budget-label">💸 Spent</span><span class="budget-value" style="color:#f44336;">RM ${totalSpent.toFixed(2)}</span></div><div class="budget-amount"><span class="budget-label">✅ Remaining</span><span class="budget-value" style="color:${remaining>=0?'#4caf50':'#f44336'};">RM ${remaining.toFixed(2)}</span></div><div class="budget-progress-bar"><div class="budget-progress-fill" style="width: ${Math.min(percentUsed,100)}%"></div></div>`;
+        if(budget===0) html+=`<div style="font-size:11px; margin-top:8px;"><i class="fas fa-info-circle"></i> Click "Set Budget" to plan your spending</div>`; else if(remaining<0) html+=`<div style="font-size:11px; margin-top:8px; color:#f44336;"><i class="fas fa-exclamation-triangle"></i> Over budget! Try to reduce expenses.</div>`;
+        html+=`</div>`;
+        const catExpenses=getCategoryExpenses(trip.expenses);
+        html+=`<div class="budget-category-breakdown"><div class="gallery-title"><i class="fas fa-chart-pie"></i> Breakdown by Category</div>`;
+        for(const[cat,amount] of Object.entries(catExpenses)){ if(amount>0){ html+=`<div class="category-item"><span class="category-name">${cat==='Food'?'🍔':cat==='Accommodation'?'🏨':cat==='Transport'?'🚗':cat==='Activities'?'🎢':cat==='Shopping'?'🛍️':'📌'} ${cat}</span><span class="category-amount">RM ${amount.toFixed(2)}</span></div>`; } }
+        html+=`</div><div><div class="gallery-title"><i class="fas fa-receipt"></i> Expenses (${trip.expenses?.length||0}) <button class="upload-gallery-btn" onclick="openAddExpenseModal(${trip.id})"><i class="fas fa-plus"></i> Add Expense</button></div>`;
+        if(trip.expenses&&trip.expenses.length>0){ trip.expenses.forEach((exp,idx)=>{ html+=`<div class="expense-item"><div class="expense-info"><div class="expense-desc">${getCategoryIcon(exp.category)} ${escapeHtml(exp.description)}</div><div class="expense-category">${exp.category}</div></div><div class="expense-amount">RM ${exp.amount.toFixed(2)}</div><div class="expense-actions"><button class="edit-expense" onclick="event.stopPropagation(); openAddExpenseModal(${trip.id}, ${idx})"><i class="fas fa-edit"></i></button><button class="delete-expense" onclick="event.stopPropagation(); deleteExpense(${trip.id}, ${idx})"><i class="fas fa-trash"></i></button></div></div>`; }); }else{ html+=`<div class="no-gallery" style="padding:15px;"><i class="fas fa-coins"></i> No expenses yet. Add your spending!</div>`; }
+        html+=`</div></div><div class="itinerary-builder" style="margin-top:20px;"><div class="itinerary-builder-title"><i class="fas fa-list-ol"></i> Trip Itinerary</div>`;
+        if(!trip.itinerary||trip.itinerary.length===0){ html+='<div class="no-itinerary"><i class="fas fa-calendar-day"></i><p>No itinerary planned yet.</p><p>Click "Add New Day" to start planning!</p></div>'; }else{ html+=trip.itinerary.map((day,dayIdx)=>{ const dayCompletion=calculateDayCompletion(day); const isDayComplete=dayCompletion===100&&day.activities&&day.activities.length>0; return `<div class="itin-day-card" data-day-index="${dayIdx}"><div class="itin-day-header"><div style="display:flex; align-items:center; gap:10px;"><input type="text" class="itin-day-title" value="${escapeHtml(day.title)}" data-day="${dayIdx}" placeholder="Day ${dayIdx+1}">${isDayComplete?'<span class="day-complete-badge"><i class="fas fa-check-circle"></i> Day Complete!</span>':`<span class="day-complete-badge" style="background:#fff0f5; color:#ff6b99;">${dayCompletion}% Done</span>`}</div><div class="itin-day-actions"><button class="delete-day-btn" data-day="${dayIdx}"><i class="fas fa-trash-alt"></i></button></div></div><div class="itin-activities-list" id="itin-activities-${dayIdx}">${(day.activities||[]).map((act,actIdx)=>`<div class="itin-activity-item" data-day="${dayIdx}" data-act="${actIdx}"><input type="checkbox" class="itin-activity-checkbox" data-day="${dayIdx}" data-act="${actIdx}" ${act.completed?'checked':''}><input type="time" class="itin-activity-time" value="${act.time}" data-day="${dayIdx}" data-act="${actIdx}"><input type="text" class="itin-activity-text ${act.completed?'completed':''}" value="${escapeHtml(act.activity)}" data-day="${dayIdx}" data-act="${actIdx}" placeholder="e.g., Visit Batu Caves"><button class="delete-itin-activity" data-day="${dayIdx}" data-act="${actIdx}"><i class="fas fa-times-circle"></i></button></div>`).join('')}</div><button class="add-itin-activity-btn" data-day="${dayIdx}"><i class="fas fa-plus"></i> Add Activity</button></div>`; }).join(''); }
+        html+=`<button class="add-itin-day-btn" id="addDayInItineraryBtn"><i class="fas fa-plus"></i> Add New Day</button></div><div class="gallery-section"><div class="gallery-title"><i class="fas fa-images"></i> Trip Gallery (${trip.gallery?.length||0} photos) <button class="upload-gallery-btn" onclick="openUploadGalleryModal(${trip.id})"><i class="fas fa-plus"></i> Add Photos</button></div><div class="gallery-grid">`;
+        if(trip.gallery&&trip.gallery.length>0){ trip.gallery.forEach((item,idx)=>{ const captionText=item.caption||''; html+=`<div class="gallery-item"><div class="gallery-img-container"><img src="${item.image}" onclick="openImageViewer('${item.image}', '${escapeHtml(captionText)}')"><div class="delete-gallery-img" onclick="event.stopPropagation(); deleteGalleryImage(${trip.id}, ${idx})"><i class="fas fa-times-circle"></i></div></div><div class="gallery-caption" onclick="event.stopPropagation(); editCaption(${trip.id}, ${idx}, '${escapeHtml(captionText)}')"><i class="fas fa-edit"></i> ${captionText||'Add caption...'}</div></div>`; }); }else{ html+=`<div class="no-gallery"><i class="fas fa-camera"></i> No photos yet. Click "Add Photos" to share your memories!</div>`; }
+        html+=`</div></div>`; container.innerHTML=html; document.getElementById('addDayInItineraryBtn')?.addEventListener('click',()=>addNewDayToItinerary()); attachItineraryEventListeners(); }
+    function attachItineraryEventListeners(){ document.querySelectorAll('.itin-day-title').forEach(inp=>inp.addEventListener('change',(e)=>{ const d=parseInt(e.target.dataset.day); const trips=userTrips[currentUser.email]; const trip=trips.find(t=>t.id===currentEditTripId); if(trip?.itinerary[d]) trip.itinerary[d].title=e.target.value; })); document.querySelectorAll('.itin-activity-checkbox').forEach(cb=>cb.addEventListener('change',(e)=>{ const d=parseInt(cb.dataset.day),a=parseInt(cb.dataset.act); const trips=userTrips[currentUser.email]; const trip=trips.find(t=>t.id===currentEditTripId); if(trip?.itinerary[d]?.activities[a]){ trip.itinerary[d].activities[a].completed=cb.checked; renderEditableItinerary(trip); renderTrips(); renderPublicTrips(); renderProfile(); } })); document.querySelectorAll('.delete-day-btn').forEach(btn=>btn.addEventListener('click',(e)=>{ const d=parseInt(btn.dataset.day); const trips=userTrips[currentUser.email]; const trip=trips.find(t=>t.id===currentEditTripId); if(trip?.itinerary[d]){ trip.itinerary.splice(d,1); renderEditableItinerary(trip); renderTrips(); } })); document.querySelectorAll('.itin-activity-time').forEach(inp=>inp.addEventListener('change',(e)=>{ const d=parseInt(inp.dataset.day),a=parseInt(inp.dataset.act); const trips=userTrips[currentUser.email]; const trip=trips.find(t=>t.id===currentEditTripId); if(trip?.itinerary[d]?.activities[a]) trip.itinerary[d].activities[a].time=e.target.value; })); document.querySelectorAll('.itin-activity-text').forEach(inp=>inp.addEventListener('change',(e)=>{ const d=parseInt(inp.dataset.day),a=parseInt(inp.dataset.act); const trips=userTrips[currentUser.email]; const trip=trips.find(t=>t.id===currentEditTripId); if(trip?.itinerary[d]?.activities[a]) trip.itinerary[d].activities[a].activity=e.target.value; })); document.querySelectorAll('.delete-itin-activity').forEach(btn=>btn.addEventListener('click',(e)=>{ const d=parseInt(btn.dataset.day),a=parseInt(btn.dataset.act); const trips=userTrips[currentUser.email]; const trip=trips.find(t=>t.id===currentEditTripId); if(trip?.itinerary[d]?.activities[a]){ trip.itinerary[d].activities.splice(a,1); renderEditableItinerary(trip); renderTrips(); } })); document.querySelectorAll('.add-itin-activity-btn').forEach(btn=>btn.addEventListener('click',(e)=>{ const d=parseInt(btn.dataset.day); const trips=userTrips[currentUser.email]; const trip=trips.find(t=>t.id===currentEditTripId); if(trip?.itinerary[d]){ if(!trip.itinerary[d].activities) trip.itinerary[d].activities=[]; trip.itinerary[d].activities.push({time:"09:00", activity:"", completed:false}); renderEditableItinerary(trip); } })); }
+    function addNewDayToItinerary(){ const trips=userTrips[currentUser.email]; const trip=trips.find(t=>t.id===currentEditTripId); if(trip){ trip.itinerary.push({ title: `Day ${trip.itinerary.length+1}`, activities: [] }); renderEditableItinerary(trip); } }
+    function saveItineraryChanges(){ localStorage.setItem('triptrace_user_trips',JSON.stringify(userTrips)); closeEditItineraryModal(); renderTrips(); renderUpcomingTrips(); renderPublicTrips(); renderProfile(); }
+    function closeEditItineraryModal(){ document.getElementById('editItineraryModal').style.display='none'; currentEditTripId=null; }
+
+    // ========== Render Trips ==========
+    function renderTrips(){ if(!tripsListDiv) return; const trips=userTrips[currentUser?.email]||[]; if(trips.length===0){ tripsListDiv.innerHTML='<div class="empty-state"><i class="fas fa-map"></i><p>No trips yet. Tap + to create!</p></div>'; return; } tripsListDiv.innerHTML=trips.map(trip=>{ const isFullyCompleted=isTripFullyCompletedByChecklist(trip); const duration=calculateTripDuration(trip.startDate,trip.endDate); const privacyBadge=trip.privacy==='public'?'<span class="trip-badge badge-public"><i class="fas fa-globe"></i> Public</span>':'<span class="trip-badge badge-private"><i class="fas fa-lock"></i> Private</span>'; const statusBadge=isFullyCompleted?'<span class="trip-badge badge-completed"><i class="fas fa-check-circle"></i> Completed ✓</span>':'<span class="trip-badge badge-ongoing"><i class="fas fa-hourglass-half"></i> In Progress</span>'; const shareButton=isFullyCompleted?`<button class="share-toggle" onclick="event.stopPropagation(); toggleTripPrivacy(${trip.id})"><i class="fas ${trip.privacy==='public'?'fa-lock':'fa-globe'}"></i> ${trip.privacy==='public'?'Make Private':'Share to Public'}</button>`:''; const galleryCount=trip.gallery?trip.gallery.length:0; const galleryIcon=galleryCount>0?`<span style="font-size:10px; color:#ff6b99; margin-left:5px;"><i class="fas fa-images"></i> ${galleryCount}</span>`:''; const budgetIcon=trip.budget?`<span style="font-size:10px; color:#4caf50; margin-left:5px;"><i class="fas fa-wallet"></i> RM${trip.budget}</span>`:''; const tripImage = trip.image ? trip.image : 'Trip thumbnail.jpeg'; return `<div class="trip-item" data-trip-id="${trip.id}"><div class="trip-item-img"><img src="${tripImage}" onerror="this.src='https://placehold.co/55x55/ff7aa2/white?text=${encodeURIComponent(trip.name.substring(0,3))}'" style="width:55px; height:55px; object-fit:cover; border-radius:15px;"></div><div class="trip-item-info"><strong>${escapeHtml(trip.name)}${galleryIcon}${budgetIcon}</strong><br>📍 ${escapeHtml(trip.destination)}<br>📅 ${trip.startDate||'No date'} to ${trip.endDate||'No date'} (${duration} days)<div>${privacyBadge} ${statusBadge}</div><div style="font-size:11px; margin-top:3px;"><i class="fas fa-list-ul"></i> ${trip.itinerary?.length||0} day(s) | <i class="fas fa-receipt"></i> ${trip.expenses?.length||0} expenses</div></div><div class="trip-actions">${shareButton}<button class="edit-btn" onclick="event.stopPropagation(); openEditModal(${trip.id})"><i class="fas fa-edit"></i></button><button class="delete-btn" onclick="event.stopPropagation(); deleteTrip(${trip.id})"><i class="fas fa-trash"></i></button></div></div>`; }).join(''); document.querySelectorAll('.trip-item').forEach(item=>{ item.addEventListener('click',(e)=>{ if(!e.target.closest('.edit-btn')&&!e.target.closest('.delete-btn')&&!e.target.closest('.share-toggle')){ openEditItineraryModal(parseInt(item.dataset.tripId)); } }); }); }
+
+    // ========== Profile Rendering ==========
+    function renderProfile() {
+        if (!profileContent) return;
+        const trips = userTrips[currentUser?.email] || [];
+        const totalTrips = trips.length;
+        const completedTrips = trips.filter(t => isTripFullyCompletedByChecklist(t)).length;
+        const totalBudget = trips.reduce((sum, t) => sum + (t.budget || 0), 0);
+        const totalSpent = trips.reduce((sum, t) => sum + (t.expenses?.reduce((s, e) => s + e.amount, 0) || 0), 0);
+        const totalPhotos = trips.reduce((sum, t) => sum + (t.gallery?.length || 0), 0);
+        const publicTrips = trips.filter(t => t.privacy === 'public');
+        const avatarColor = currentUser.avatarColor || '#ff7aa2';
+        const favoritesCount = Object.values(JSON.parse(localStorage.getItem('triptrace_favorites') || '{}')).filter(f => f.userEmail).length;
+        
+        profileContent.innerHTML = `
+            <div class="profile-header" style="background: ${avatarColor};"><div class="edit-profile-icon" id="openEditProfileBtn"><i class="fas fa-pen"></i></div><div class="profile-avatar-large" id="changeAvatarBtn">${currentUser.avatarImage ? `<img src="${currentUser.avatarImage}" alt="Avatar">` : `<i class="fas fa-user-circle"></i>`}</div><div class="profile-name-large">${escapeHtml(currentUser.fullName)}</div><div class="profile-email-large">${escapeHtml(currentUser.email)}</div><div class="profile-phone-large" style="font-size:12px; margin-top:5px; opacity:0.9;">${currentUser.phone || 'No phone'}</div></div>
+            <div class="stats-grid"><div class="stat-card"><div class="stat-number">${totalTrips}</div><div class="stat-label">Total Trips</div></div><div class="stat-card"><div class="stat-number">${completedTrips}</div><div class="stat-label">Completed</div></div><div class="stat-card"><div class="stat-number">RM ${totalBudget.toFixed(0)}</div><div class="stat-label">Total Budget</div></div><div class="stat-card"><div class="stat-number">RM ${totalSpent.toFixed(0)}</div><div class="stat-label">Total Spent</div></div><div class="stat-card"><div class="stat-number">${totalPhotos}</div><div class="stat-label">Photos</div></div><div class="stat-card"><div class="stat-number">${publicTrips.length}</div><div class="stat-label">Public Trips</div></div><div class="stat-card"><div class="stat-number">${favoritesCount}</div><div class="stat-label">Favorites</div></div></div>
+            <div class="social-stats"><div class="social-stat"><div class="social-stat-number">${currentUser.followers?.length || 0}</div><div class="social-stat-label">Followers</div></div><div class="social-stat"><div class="social-stat-number">${currentUser.following?.length || 0}</div><div class="social-stat-label">Following</div></div></div>
+            ${publicTrips.length > 0 ? `<div class="profile-section"><div class="profile-section-title"><i class="fas fa-globe"></i> My Public Trips</div>${publicTrips.slice(0, 3).map(trip => { const tripImage = trip.image ? trip.image : 'Trip thumbnail.jpeg'; return `<div class="public-trip-mini" onclick="viewPublicTripFromProfile('${trip.id}')"><div class="public-trip-mini-img"><img src="${tripImage}" onerror="this.src='https://placehold.co/45x45/ff7aa2/white?text=${encodeURIComponent(trip.name.substring(0,3))}'" style="width:45px; height:45px; object-fit:cover;"></div><div class="public-trip-mini-info"><div class="public-trip-mini-name">${escapeHtml(trip.name)}</div><div class="public-trip-mini-dest">📍 ${escapeHtml(trip.destination)}</div></div></div>`; }).join('')}${publicTrips.length > 3 ? `<div style="text-align:center; padding:10px; color:#ff6b99; font-size:12px;">+${publicTrips.length - 3} more trips</div>` : ''}</div>` : ''}
+            <div class="profile-section"><div class="profile-section-title"><i class="fas fa-cog"></i> Account Settings</div><button class="logout-btn" id="profileLogoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button></div>
+        `;
+        document.getElementById('openEditProfileBtn')?.addEventListener('click', openEditProfileModal);
+        document.getElementById('profileLogoutBtn')?.addEventListener('click', handleLogout);
+    }
+    
+    function openEditProfileModal() {
+        editFullName.value = currentUser.fullName || '';
+        editPhone.value = currentUser.phone || '';
+        editEmail.value = currentUser.email || '';
+        editPassword.value = '';
+        document.querySelectorAll('.avatar-color').forEach(el => { if (el.dataset.color === (currentUser.avatarColor || '#ff7aa2')) el.classList.add('selected'); else el.classList.remove('selected'); });
+        editProfileModal.style.display = 'flex';
+    }
+    function closeEditProfileModal() { editProfileModal.style.display = 'none'; }
+    
+    function viewPublicTripFromProfile(tripId) {
+        const trip = userTrips[currentUser.email]?.find(t => t.id == tripId);
+        if (trip) openViewPublicTripModal(trip, currentUser.email);
+    }
+    
+    document.querySelectorAll('.avatar-color').forEach(el => {
+        el.addEventListener('click', () => {
+            document.querySelectorAll('.avatar-color').forEach(a => a.classList.remove('selected'));
+            el.classList.add('selected');
+            selectedAvatarColor = el.dataset.color;
+        });
+    });
+    
+    saveProfileBtn?.addEventListener('click', () => {
+        const newName = editFullName.value.trim();
+        const newPhone = editPhone.value.trim();
+        const newPassword = editPassword.value;
+        if (!newName) { alert('Name cannot be empty'); return; }
+        const userIndex = registeredUsers.findIndex(u => u.email === currentUser.email);
+        if (userIndex !== -1) {
+            registeredUsers[userIndex].fullName = newName;
+            registeredUsers[userIndex].phone = newPhone;
+            if (newPassword) registeredUsers[userIndex].password = newPassword;
+            registeredUsers[userIndex].avatarColor = selectedAvatarColor;
+            localStorage.setItem('triptrace_users', JSON.stringify(registeredUsers));
+        }
+        currentUser.fullName = newName;
+        currentUser.phone = newPhone;
+        if (newPassword) currentUser.password = newPassword;
+        currentUser.avatarColor = selectedAvatarColor;
+        localStorage.setItem('triptrace_current_user', JSON.stringify(currentUser));
+        dashboardUserName.innerText = `🎉 Welcome, ${newName}!`;
+        closeEditProfileModal();
+        renderProfile();
+    });
+    
+    deleteAccountBtn?.addEventListener('click', () => {
+        if (confirm('Are you sure you want to delete your account? All your trips and data will be permanently deleted!')) {
+            const userIndex = registeredUsers.findIndex(u => u.email === currentUser.email);
+            if (userIndex !== -1) registeredUsers.splice(userIndex, 1);
+            localStorage.setItem('triptrace_users', JSON.stringify(registeredUsers));
+            delete userTrips[currentUser.email];
+            localStorage.setItem('triptrace_user_trips', JSON.stringify(userTrips));
+            localStorage.removeItem('triptrace_current_user');
+            localStorage.removeItem('triptrace_favorites');
+            currentUser = null;
+            closeEditProfileModal();
+            showLanding();
+        }
+    });
+
+    // ========== Public Trips with Rating, Comments & Favorite ==========
+    function loadAllPublicTrips() {
+        allPublicTripsCache = [];
+        for (const email in userTrips) {
+            const trips = userTrips[email];
+            const userName = registeredUsers.find(u => u.email === email)?.fullName || email.split('@')[0];
+            trips.forEach(trip => {
+                if (trip.privacy === 'public' && isTripFullyCompletedByChecklist(trip)) {
+                    const duration = calculateTripDuration(trip.startDate, trip.endDate);
+                    const totalSpent = trip.expenses ? trip.expenses.reduce((s, e) => s + e.amount, 0) : 0;
+                    allPublicTripsCache.push({ ...trip, userName, userEmail: email, duration, totalSpent, budget: trip.budget || 0 });
+                }
+            });
+        }
+        let maxBudgetVal = 5000;
+        allPublicTripsCache.forEach(trip => { if (trip.budget > maxBudgetVal) maxBudgetVal = trip.budget; });
+        maxBudgetVal = Math.ceil(maxBudgetVal / 100) * 100 + 500;
+        budgetSlider.max = maxBudgetVal;
+        if (maxBudget === 5000 && maxBudgetVal > 5000) { budgetSlider.value = maxBudgetVal; maxBudget = maxBudgetVal; budgetValue.innerText = maxBudgetVal; }
+    }
+    
+    function filterTrips() {
+        let filtered = [...allPublicTripsCache];
+        const searchTerm = exploreSearchInput?.value.toLowerCase() || '';
+        if (searchTerm) { filtered = filtered.filter(trip => trip.name.toLowerCase().includes(searchTerm) || trip.destination.toLowerCase().includes(searchTerm) || trip.userName.toLowerCase().includes(searchTerm)); }
+        if (selectedDuration !== 'all') {
+            const durationNum = parseInt(selectedDuration);
+            if (durationNum === 3) { filtered = filtered.filter(trip => trip.duration >= 3); }
+            else { filtered = filtered.filter(trip => trip.duration === durationNum); }
+        }
+        filtered = filtered.filter(trip => trip.budget <= maxBudget);
+        filterStats.innerText = `Showing ${filtered.length} of ${allPublicTripsCache.length} trips`;
+        if (filtered.length === 0) { publicTripsList.innerHTML = '<div class="empty-state"><i class="fas fa-globe"></i><p>No public trips match your filters. Try adjusting them!</p></div>'; return; }
+        
+        publicTripsList.innerHTML = filtered.map(trip => {
+            const galleryPreview = trip.gallery && trip.gallery.length > 0 ? `<div class="gallery-preview">${trip.gallery.slice(0, 3).map(item => `<img src="${item.image}" class="gallery-preview-img" onclick="event.stopPropagation(); openImageViewer('${item.image}', '${escapeHtml(item.caption || '')}')">`).join('')}${trip.gallery.length > 3 ? `<span style="font-size:11px;">+${trip.gallery.length - 3}</span>` : ''}</div>` : '';
+            const userRating = getUserRating(trip);
+            const avgRating = getAverageRating(trip);
+            let starsHtml = '';
+            for (let i = 1; i <= 5; i++) {
+                starsHtml += `<i class="fas fa-star rating-star" data-rating="${i}" data-trip-id="${trip.id}" data-user-email="${trip.userEmail}" style="font-size: 11px; margin: 0 2px; cursor: pointer; color: ${userRating >= i ? '#ffc107' : '#ddd'}"></i>`;
+            }
+            const ratingDisplay = `<div class="rating-stars" onclick="event.stopPropagation()">${starsHtml}<span class="rating-average">(${avgRating.toFixed(1)} ★ • ${trip.ratings?.length || 0})</span></div>`;
+            const isFav = isFavorite(trip.id, trip.userEmail);
+            const favHtml = `<button class="favorite-btn ${isFav ? 'active' : ''}" onclick="event.stopPropagation(); toggleFavorite(${trip.id}, '${trip.userEmail}')"><i class="fas fa-heart"></i></button>`;
+            const tripImage = trip.image ? trip.image : 'Trip thumbnail.jpeg';
+            
+            return `<div class="public-trip-card" data-trip-id="${trip.id}" data-user-email="${trip.userEmail}">
+                <div class="public-trip-header">
+                    <div class="public-trip-img"><img src="${tripImage}" onerror="this.src='https://placehold.co/60x60/ff7aa2/white?text=${encodeURIComponent(trip.name.substring(0,3))}'" style="width:60px; height:60px; object-fit:cover; border-radius:15px;"></div>
+                    <div class="public-trip-info">
+                        <h4>${escapeHtml(trip.name)} ${favHtml}<span style="font-size:10px; color:#ff6b99; margin-left:5px;">${trip.gallery?.length || 0} 📸</span></h4>
+                        <p><i class="fas fa-map-marker-alt"></i> ${escapeHtml(trip.destination)}</p>
+                        <p><i class="fas fa-user"></i> ${escapeHtml(trip.userName)}</p>
+                        <p><i class="fas fa-calendar"></i> ${trip.startDate} to ${trip.endDate} (${trip.duration} day${trip.duration > 1 ? 's' : ''})</p>
+                        ${ratingDisplay}
+                        ${galleryPreview}
+                    </div>
+                </div>
+                <div class="public-trip-stats"><i class="fas fa-list-ul"></i> ${trip.itinerary?.length || 0} days | <i class="fas fa-wallet"></i> Budget: RM${trip.budget || 0}</div>
+            </div>`;
+        }).join('');
+        
+        document.querySelectorAll('.public-trip-card .rating-star').forEach(star => {
+            star.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const rating = parseInt(star.getAttribute('data-rating'));
+                const tripId = parseInt(star.getAttribute('data-trip-id'));
+                const userEmail = star.getAttribute('data-user-email');
+                if (!isNaN(rating) && !isNaN(tripId) && userEmail && currentUser) {
+                    rateTrip(tripId, userEmail, rating);
+                }
+            });
+        });
+        
+        document.querySelectorAll('.public-trip-card').forEach(card => {
+            card.addEventListener('click', (e) => {
+                if (!e.target.classList.contains('rating-star') && !e.target.classList.contains('favorite-btn')) {
+                    const tripId = parseInt(card.dataset.tripId);
+                    const userEmail = card.dataset.userEmail;
+                    const trip = userTrips[userEmail]?.find(t => t.id === tripId);
+                    if (trip) openViewPublicTripModal(trip, userEmail);
+                }
+            });
+        });
+    }
+    
+    function applyFilters() { filterTrips(); }
+    function setupFilterListeners() {
+        filterToggleBtn?.addEventListener('click', () => { filterPanel.classList.toggle('show'); const icon = document.getElementById('filterIcon'); if (filterPanel.classList.contains('show')) { icon.classList.remove('fa-chevron-down'); icon.classList.add('fa-chevron-up'); } else { icon.classList.remove('fa-chevron-up'); icon.classList.add('fa-chevron-down'); } });
+        budgetSlider?.addEventListener('input', (e) => { maxBudget = parseInt(e.target.value); budgetValue.innerText = maxBudget; applyFilters(); });
+        document.querySelectorAll('.duration-btn').forEach(btn => { btn.addEventListener('click', () => { document.querySelectorAll('.duration-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); selectedDuration = btn.dataset.duration; applyFilters(); }); });
+        resetFilterBtn?.addEventListener('click', () => { maxBudget = budgetSlider.max; budgetSlider.value = maxBudget; budgetValue.innerText = maxBudget; selectedDuration = 'all'; document.querySelectorAll('.duration-btn').forEach(b => b.classList.remove('active')); document.querySelector('.duration-btn[data-duration="all"]').classList.add('active'); exploreSearchInput.value = ''; applyFilters(); });
+        exploreSearchInput?.addEventListener('input', () => applyFilters());
+    }
+    function renderPublicTrips() { loadAllPublicTrips(); applyFilters(); }
+    
+    function openViewPublicTripModal(trip, userEmail) {
+        const userName = registeredUsers.find(u => u.email === userEmail)?.fullName || userEmail.split('@')[0];
+        document.getElementById('viewPublicTripName').innerHTML = `${escapeHtml(trip.name)} <span style="font-size:12px; color:#a07a8a;">by ${escapeHtml(userName)}</span>`;
+        const container = document.getElementById('viewPublicTripContent');
+        let html = '';
+        const totalSpent = trip.expenses ? trip.expenses.reduce((s, e) => s + e.amount, 0) : 0;
+        const budget = trip.budget || 0;
+        const catExpenses = getCategoryExpenses(trip.expenses);
+        
+        html += `<div class="explore-section-box" style="background: #e8f5e9;"><div class="explore-section-title"><i class="fas fa-wallet"></i> Budget Summary</div><div class="budget-amount"><span>💰 Total Budget:</span><span>RM ${budget.toFixed(2)}</span></div><div class="budget-amount"><span>💸 Total Spent:</span><span>RM ${totalSpent.toFixed(2)}</span></div><div class="budget-amount"><span>✅ Remaining:</span><span style="color:${(budget - totalSpent) >= 0 ? '#4caf50' : '#f44336'}">RM ${(budget - totalSpent).toFixed(2)}</span></div><div class="budget-progress-bar"><div class="budget-progress-fill" style="width: ${budget > 0 ? Math.min((totalSpent / budget) * 100, 100) : 0}%"></div></div></div>`;
+        html += `<div class="explore-section-box"><div class="explore-section-title"><i class="fas fa-chart-pie"></i> Spending by Category</div>`;
+        let hasCategories = false;
+        for (const [cat, amount] of Object.entries(catExpenses)) { if (amount > 0) { hasCategories = true; html += `<div class="category-item"><span class="category-name">${cat === 'Food' ? '🍔' : cat === 'Accommodation' ? '🏨' : cat === 'Transport' ? '🚗' : cat === 'Activities' ? '🎢' : cat === 'Shopping' ? '🛍️' : '📌'} ${cat}</span><span class="category-amount">RM ${amount.toFixed(2)}</span></div>`; } }
+        if (!hasCategories) html += `<div style="text-align:center; padding:10px; color:#b8a1ab;">No expenses recorded</div>`;
+        html += `</div>`;
+        
+        if (trip.expenses && trip.expenses.length > 0) { html += `<div class="explore-section-box"><div class="explore-section-title"><i class="fas fa-receipt"></i> Detailed Expenses (${trip.expenses.length} items)</div><div class="expenses-list">`; trip.expenses.forEach(exp => { html += `<div class="expense-item"><div class="expense-info"><div class="expense-desc">${getCategoryIcon(exp.category)} ${escapeHtml(exp.description)}</div><div class="expense-category">${exp.category}</div></div><div class="expense-amount">RM ${exp.amount.toFixed(2)}</div></div>`; }); html += `</div></div>`; }
+        else { html += `<div class="explore-section-box" style="text-align:center; color:#b8a1ab;"><i class="fas fa-coins"></i> No expenses recorded for this trip.</div>`; }
+        
+        if (!trip.itinerary || trip.itinerary.length === 0) { html += `<div class="explore-section-box" style="text-align:center; color:#b8a1ab;"><i class="fas fa-calendar-day"></i> No itinerary planned for this trip.</div>`; }
+        else { html += `<div class="explore-section-box"><div class="explore-section-title"><i class="fas fa-list-ol"></i> Trip Itinerary (${trip.itinerary.length} days)</div>`; trip.itinerary.forEach(day => { html += `<div class="itin-day-card" style="margin-bottom: 15px; background: white;"><div class="itin-day-header" style="margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #ffe0ec;"><strong style="color: #ff4d7a;">📅 ${escapeHtml(day.title)}</strong></div>`; if (day.activities && day.activities.length > 0) { day.activities.forEach(act => { html += `<div class="itin-activity-item" style="background: #fefafc; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 12px; border: 1px solid #f0cedd;"><span class="itin-activity-time" style="background: #ffecf2; padding: 4px 10px; border-radius: 20px; font-size: 11px; color: #ff4d7a; min-width: 80px; text-align: center;">⏰ ${act.time || 'Any time'}</span><span class="itin-activity-text" style="flex: 1; font-size: 13px; ${act.completed ? 'text-decoration: line-through; color: #b8a1ab;' : ''}">${escapeHtml(act.activity)}</span></div>`; }); } else { html += `<div style="padding: 10px; color: #b8a1ab; font-size: 12px; text-align: center;">No activities planned for this day</div>`; } html += `</div>`; }); html += `</div>`; }
+        
+        if (trip.gallery && trip.gallery.length > 0) { html += `<div class="explore-section-box"><div class="explore-section-title"><i class="fas fa-images"></i> Trip Gallery (${trip.gallery.length} photos)</div><div class="gallery-grid">`; trip.gallery.forEach(item => { html += `<div class="gallery-item"><div class="gallery-img-container"><img src="${item.image}" onclick="openImageViewer('${item.image}', '${escapeHtml(item.caption || '')}')"></div><div class="gallery-caption">${item.caption || ''}</div></div>`; }); html += `</div></div>`; }
+        
+        html += `<div class="comments-section"><div class="explore-section-title"><i class="fas fa-comments"></i> Comments (${trip.comments?.length || 0})</div>`;
+        if (trip.comments && trip.comments.length > 0) {
+            trip.comments.forEach(comment => {
+                const isOwner = (currentUser && currentUser.email === userEmail);
+                html += `<div class="comment-item">
+                    <div class="comment-header"><span class="comment-user"><i class="fas fa-user-circle"></i> ${escapeHtml(comment.userName)}</span><span class="comment-date">${new Date(comment.date).toLocaleDateString()}</span></div>
+                    <div class="comment-text">${escapeHtml(comment.text)}</div>
+                    <div class="comment-actions"><span onclick="showReplyForm(${comment.id})"><i class="fas fa-reply"></i> Reply</span></div>
+                    <div id="replies-${comment.id}" style="margin-top: 10px;">`;
+                if (comment.replies && comment.replies.length > 0) {
+                    comment.replies.forEach(reply => {
+                        html += `<div class="reply-item"><div class="comment-header"><span class="comment-user"><i class="fas fa-user-circle"></i> ${escapeHtml(reply.userName)}</span><span class="comment-date">${new Date(reply.date).toLocaleDateString()}</span></div><div class="reply-text">${escapeHtml(reply.text)}</div>${isOwner ? `<div style="font-size:10px; margin-top:5px;"><span style="color:#ff6b99;">Trip Owner</span></div>` : ''}</div>`;
+                    });
+                }
+                html += `<div id="reply-form-${comment.id}" class="reply-form" style="display:none;"><input type="text" id="reply-input-${comment.id}" placeholder="Write a reply..." maxlength="200"><button onclick="submitReply(${trip.id}, '${userEmail}', ${comment.id})">Reply</button></div></div></div>`;
+            });
+        } else {
+            html += `<div class="empty-state" style="padding: 20px;"><i class="fas fa-comment-dots"></i><p>No comments yet. Be the first to comment!</p></div>`;
+        }
+        if (currentUser) {
+            html += `<div class="add-comment-form"><input type="text" id="new-comment-input" placeholder="Write a comment..."><button onclick="submitNewComment(${trip.id}, '${userEmail}')">Post</button></div>`;
+        } else {
+            html += `<div class="empty-state" style="padding: 15px;"><i class="fas fa-lock"></i><p>Please login to comment</p></div>`;
+        }
+        html += `</div>`;
+        container.innerHTML = html;
+        document.getElementById('viewPublicTripModal').style.display = 'flex';
+    }
+    function closeViewPublicTripModal(){ document.getElementById('viewPublicTripModal').style.display='none'; }
+
+    window.submitNewComment = function(tripId, userEmail) {
+        const input = document.getElementById('new-comment-input');
+        if (input && input.value.trim()) { addComment(tripId, userEmail, input.value); input.value = ''; }
+    }
+    window.showReplyForm = function(commentId) {
+        const form = document.getElementById(`reply-form-${commentId}`);
+        if (form) form.style.display = 'flex';
+    }
+    window.submitReply = function(tripId, userEmail, commentId) {
+        const input = document.getElementById(`reply-input-${commentId}`);
+        if (input && input.value.trim()) { addReply(tripId, userEmail, commentId, input.value); input.value = ''; document.getElementById(`reply-form-${commentId}`).style.display = 'none'; }
+    }
+
+    // ========== Quick Access Functions ==========
+    document.getElementById('quickItineraryBtn')?.addEventListener('click', () => { showTripsView(); });
+    document.getElementById('quickBudgetBtn')?.addEventListener('click', () => {
+        const trips = userTrips[currentUser?.email] || [];
+        if (trips.length === 0) { alert('📋 No trips yet. Tap + to create a trip first!'); return; }
+        let totalBudget = 0, totalSpent = 0, tripsWithBudget = 0;
+        trips.forEach(trip => { if (trip.budget && trip.budget > 0) { totalBudget += trip.budget; tripsWithBudget++; } if (trip.expenses) { totalSpent += trip.expenses.reduce((s, e) => s + e.amount, 0); } });
+        alert(`📊 BUDGET SUMMARY\n\n💰 Total Budget: RM ${totalBudget.toFixed(2)}\n💸 Total Spent: RM ${totalSpent.toFixed(2)}\n✅ Remaining: RM ${(totalBudget - totalSpent).toFixed(2)}\n📋 Trips with budget: ${tripsWithBudget} of ${trips.length}`);
+    });
+    
+    document.getElementById('quickMapBtn')?.addEventListener('click', () => {
+        const trips = userTrips[currentUser?.email] || [];
+        const completedTrips = trips.filter(t => isTripFullyCompletedByChecklist(t));
+        if (completedTrips.length === 0) { alert('🗺️ No completed trips with locations yet. Complete a trip and share it!'); return; }
+        const modalDiv = document.createElement('div'); modalDiv.className = 'modal'; modalDiv.style.display = 'flex';
+        modalDiv.innerHTML = `<div class="modal-content" style="max-width: 650px;"><div class="modal-header"><h3><i class="fas fa-map-marked-alt"></i> My Travel Map (${completedTrips.length} locations)</h3><span class="close-modal" onclick="this.closest('.modal').remove()">&times;</span></div><div id="quickMapContainer" style="height: 450px; border-radius: 20px; overflow: hidden;"></div><div style="margin-top: 15px; max-height: 150px; overflow-y: auto;">${completedTrips.map(trip => `<div style="padding: 8px; border-bottom: 1px solid #ffe0ec; display: flex; align-items: center; gap: 10px;"><div style="width: 40px; height: 40px; border-radius: 10px; background: #f0cedd; overflow: hidden;">${trip.image ? `<img src="${trip.image}" style="width:100%; height:100%; object-fit:cover;">` : `<i class="fas fa-map-marker-alt" style="display:flex; align-items:center; justify-content:center; height:100%;"></i>`}</div><div style="flex:1;"><strong>📍 ${escapeHtml(trip.destination)}</strong><br><span style="font-size: 11px; color: #a07a8a;">${escapeHtml(trip.name)}</span></div></div>`).join('')}</div></div>`;
+        document.body.appendChild(modalDiv);
+        setTimeout(() => {
+            const mapContainer = document.getElementById('quickMapContainer');
+            if (mapContainer) {
+                const quickMap = L.map(mapContainer).setView([4.2105, 101.9758], 6);
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { attribution: '&copy; OSM' }).addTo(quickMap);
+                const redIcon = L.divIcon({ className: 'custom-marker', html: '<div style="background:#ff4d7a; width:14px; height:14px; border-radius:50%; border:2px solid white; box-shadow:0 2px 5px rgba(0,0,0,0.2);"></div>', iconSize: [14, 14], popupAnchor: [0, -7] });
+                const bounds = [];
+                completedTrips.forEach(trip => {
+                    if (trip.location && trip.location.lat && trip.location.lng) {
+                        const lat = trip.location.lat, lng = trip.location.lng;
+                        bounds.push([lat, lng]);
+                        L.marker([lat, lng], { icon: redIcon }).addTo(quickMap).bindPopup(`<div style="text-align:center;">${trip.image ? `<img src="${trip.image}" style="width:80px; height:80px; border-radius:12px; object-fit:cover; margin-bottom:8px;"><br>` : ''}<strong>${escapeHtml(trip.name)}</strong><br>📍 ${escapeHtml(trip.destination)}<br>📅 ${trip.startDate} - ${trip.endDate}</div>`);
+                    } else if (trip.destination) {
+                        fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(trip.destination)}, Malaysia&limit=1`).then(res => res.json()).then(data => { if (data && data.length > 0) { const lat = parseFloat(data[0].lat), lng = parseFloat(data[0].lon); bounds.push([lat, lng]); L.marker([lat, lng], { icon: redIcon }).addTo(quickMap).bindPopup(`<div style="text-align:center;">${trip.image ? `<img src="${trip.image}" style="width:80px; height:80px; border-radius:12px; object-fit:cover; margin-bottom:8px;"><br>` : ''}<strong>${escapeHtml(trip.name)}</strong><br>📍 ${escapeHtml(trip.destination)}<br>📅 ${trip.startDate} - ${trip.endDate}</div>`); } }).catch(() => {});
+                    }
+                });
+                if (bounds.length > 0) quickMap.fitBounds(bounds);
+            }
+        }, 100);
+    });
+
+    // ========== Edit/Delete Trip ==========
+    function openEditModal(tripId){ const trip=userTrips[currentUser.email].find(t=>t.id===tripId); if(trip){ editTripId=tripId; document.getElementById('editTripName').value=trip.name; document.getElementById('editStartDate').value=trip.startDate||''; document.getElementById('editEndDate').value=trip.endDate||''; document.getElementById('editDestination').value=trip.destination||''; document.getElementById('editModal').style.display='flex'; } }
+    function closeEditModal(){ document.getElementById('editModal').style.display='none'; editTripId=null; }
+    function updateTrip(){ const newName=document.getElementById('editTripName').value.trim(),newStart=document.getElementById('editStartDate').value,newEnd=document.getElementById('editEndDate').value,newDest=document.getElementById('editDestination').value.trim(); if(!newName||!newStart||!newEnd||!newDest){alert('Please fill all fields'); return;} const trips=userTrips[currentUser.email]; const idx=trips.findIndex(t=>t.id===editTripId); if(idx!==-1){ trips[idx].name=newName; trips[idx].startDate=newStart; trips[idx].endDate=newEnd; trips[idx].destination=newDest; localStorage.setItem('triptrace_user_trips',JSON.stringify(userTrips)); renderTrips(); renderUpcomingTrips(); renderPublicTrips(); renderProfile(); closeEditModal(); } }
+    function deleteTrip(tripId){ if(confirm('Delete this trip?')){ userTrips[currentUser.email]=userTrips[currentUser.email].filter(t=>t.id!==tripId); localStorage.setItem('triptrace_user_trips',JSON.stringify(userTrips)); renderTrips(); renderUpcomingTrips(); renderPublicTrips(); renderProfile(); } }
+
+    let currentImageData=null;
+    tripImageInput?.addEventListener('change',function(e){ const file=e.target.files[0]; if(file){ const reader=new FileReader(); reader.onload=function(ev){ currentImageData=ev.target.result; imagePreview.innerHTML=`<img src="${currentImageData}" style="width:100px;height:100px;border-radius:20px;object-fit:cover;">`; }; reader.readAsDataURL(file); } });
+
+    function saveTrip(){
+        const name=document.getElementById('tripName').value.trim(),dest=tripDestInput.value||selectedLocation.name,startDate=document.getElementById('tripStartDate').value,endDate=document.getElementById('tripEndDate').value;
+        if(!name||!dest||!startDate||!endDate){ document.getElementById('addTripMsg').innerText='Please fill all fields'; return; }
+        if(startDate>endDate){ document.getElementById('addTripMsg').innerText='End date must be after start date'; return; }
+        const cleanItinerary=tempItinerary.map(day=>({ title:day.title||`Day ${tempItinerary.indexOf(day)+1}`, activities:(day.activities||[]).filter(a=>a.activity&&a.activity.trim()!=="").map(a=>({ time:a.time||"09:00", activity:a.activity, completed:false })) })).filter(d=>d.activities.length>0);
+        const budgetAmount = parseFloat(newTripBudget.value) || 0;
+        const validExpenses = tempExpenses.filter(e => e.description && e.description.trim() !== "" && e.amount > 0);
+        const newTrip={ name, destination:dest, startDate, endDate, id:Date.now(), image:currentImageData||null, location:selectedLocation, itinerary:cleanItinerary, privacy:'private', gallery:[], expenses:validExpenses, budget:budgetAmount, ratings:[], comments:[], createdAt:new Date().toISOString() };
+        if(!userTrips[currentUser.email]) userTrips[currentUser.email]=[];
+        userTrips[currentUser.email].push(newTrip);
+        localStorage.setItem('triptrace_user_trips',JSON.stringify(userTrips));
+        renderTrips(); renderUpcomingTrips(); renderPublicTrips(); renderProfile();
+        document.getElementById('tripName').value=''; document.getElementById('tripStartDate').value=''; document.getElementById('tripEndDate').value='';
+        tripDestInput.value=''; currentImageData=null; imagePreview.innerHTML=''; locationSearch.value='';
+        if(marker) map.removeLayer(marker); selectedLocation={lat:4.2105,lng:101.9758,name:"Malaysia"}; selectedLocationDisplay.innerHTML='📍 Click on map or search to select location';
+        tempItinerary=[]; renderItineraryBuilder(); resetNewTripBudgetExpenses();
+        document.getElementById('addTripMsg').innerText='✅ Trip added! (Private until completed)';
+        setTimeout(()=>{document.getElementById('addTripMsg').innerText='';},2000);
+        showTripsView();
+    }
+
+    function showTripsView(){ renderTrips(); homeView.classList.add('hidden'); exploreView.classList.add('hidden'); favoritesView.classList.add('hidden'); addTripView.classList.add('hidden'); tripsView.classList.remove('hidden'); profileView.classList.add('hidden'); updateNavActive('trips'); }
+    function showProfileView(){ homeView.classList.add('hidden'); exploreView.classList.add('hidden'); favoritesView.classList.add('hidden'); addTripView.classList.add('hidden'); tripsView.classList.add('hidden'); profileView.classList.remove('hidden'); updateNavActive('profile'); renderProfile(); }
+    function showExploreView(){ homeView.classList.add('hidden'); exploreView.classList.remove('hidden'); favoritesView.classList.add('hidden'); addTripView.classList.add('hidden'); tripsView.classList.add('hidden'); profileView.classList.add('hidden'); updateNavActive('explore'); renderPublicTrips(); }
+    function showFavoritesView(){ homeView.classList.add('hidden'); exploreView.classList.add('hidden'); favoritesView.classList.remove('hidden'); addTripView.classList.add('hidden'); tripsView.classList.add('hidden'); profileView.classList.add('hidden'); updateNavActive('favorites'); renderFavorites(); }
+    function showAddTripView(){ setTimeout(()=>initMap(),100); homeView.classList.add('hidden'); exploreView.classList.add('hidden'); favoritesView.classList.add('hidden'); addTripView.classList.remove('hidden'); tripsView.classList.add('hidden'); profileView.classList.add('hidden'); updateNavActive('add'); resetItineraryBuilder(); resetNewTripBudgetExpenses(); }
+    function handleLogout(){ localStorage.removeItem('triptrace_current_user'); currentUser=null; showLanding(); }
+    function showDashboard(user){ currentUser=user; landing.classList.add('hidden'); signupPage.classList.add('hidden'); loginPage.classList.add('hidden'); dashboardPage.classList.remove('hidden'); bottomNav.style.display='flex'; dashboardUserName.innerText=`🎉 Welcome, ${user.fullName}!`; if(!userTrips[user.email]) userTrips[user.email]=[]; renderTrips(); renderUpcomingTrips(); renderPublicTrips(); renderFavorites(); renderProfile(); switchToHomeView(); }
+    function clearForms(){ if(signupName) signupName.value=''; if(signupPhone) signupPhone.value=''; if(signupEmail) signupEmail.value=''; if(signupPassword) signupPassword.value=''; if(signupConfirm) signupConfirm.value=''; if(loginEmail) loginEmail.value=''; if(loginPassword) loginPassword.value=''; }
+    function isValidEmail(email){ return /^[^\s@]+@([^\s@]+\.)+[^\s@]+$/.test(email); }
+    function storeUserLocally(user){ registeredUsers.push(user); localStorage.setItem('triptrace_users',JSON.stringify(registeredUsers)); }
+    function loadUsersFromStorage(){ const stored=localStorage.getItem('triptrace_users'); registeredUsers=stored?JSON.parse(stored):[]; }
+    function loadTripsFromStorage(){ const stored=localStorage.getItem('triptrace_user_trips'); if(stored) userTrips=JSON.parse(stored); else userTrips={}; }
+    function findUserByEmail(email){ return registeredUsers.find(u=>u.email.toLowerCase()===email.toLowerCase()); }
+    function escapeHtml(str){ if(!str) return ''; return str.replace(/[&<>]/g,function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
+    function handleSignup(){ const fullName=signupName.value.trim(),phone=signupPhone.value.trim(),email=signupEmail.value.trim(),password=signupPassword.value,confirm=signupConfirm.value; if(!fullName||!phone||!email||!password||!confirm){ signupError.innerText='❌ All fields required.'; return; } if(!isValidEmail(email)){ signupError.innerText='❌ Valid email required.'; return; } if(password.length<4){ signupError.innerText='❌ Password min 4 chars.'; return; } if(password!==confirm){ signupError.innerText='❌ Passwords do not match.'; return; } if(findUserByEmail(email)){ signupError.innerText='❌ Email already registered.'; return; } const newUser={fullName,phone,email,password, avatarColor:'#ff7aa2', followers:[], following:[]}; storeUserLocally(newUser); localStorage.setItem('triptrace_current_user',JSON.stringify({fullName,email,phone,avatarColor:'#ff7aa2'})); showDashboard({fullName,email,phone,avatarColor:'#ff7aa2'}); }
+    function handleLogin(){ const email=loginEmail.value.trim(),password=loginPassword.value; if(!email||!password){ loginError.innerText='❌ Email & password required.'; return; } const user=findUserByEmail(email); if(!user||user.password!==password){ loginError.innerText='❌ Invalid credentials.'; return; } localStorage.setItem('triptrace_current_user',JSON.stringify({fullName:user.fullName,email:user.email,phone:user.phone,avatarColor:user.avatarColor||'#ff7aa2'})); showDashboard({fullName:user.fullName,email:user.email,phone:user.phone,avatarColor:user.avatarColor||'#ff7aa2'}); }
+    function checkAutoLogin(){ const stored=localStorage.getItem('triptrace_current_user'); if(stored){ const u=JSON.parse(stored); showDashboard(u); return true; } return false; }
+
+    window.openSetBudgetModal=openSetBudgetModal; window.closeSetBudgetModal=closeSetBudgetModal;
+    window.openAddExpenseModal=openAddExpenseModal; window.closeExpenseModal=closeExpenseModal;
+    window.deleteExpense=deleteExpense; window.openUploadGalleryModal=openUploadGalleryModal;
+    window.closeUploadGalleryModal=closeUploadGalleryModal; window.deleteGalleryImage=deleteGalleryImage;
+    window.updateGalleryCaption=updateGalleryCaption; window.openImageViewer=openImageViewer;
+    window.closeImageViewer=closeImageViewer; window.editCaption=editCaption;
+    window.closeEditItineraryModal=closeEditItineraryModal; window.closeEditModal=closeEditModal;
+    window.closeViewPublicTripModal=closeViewPublicTripModal; window.openEditModal=openEditModal;
+    window.deleteTrip=deleteTrip; window.toggleTripPrivacy=toggleTripPrivacy;
+    window.closeEditProfileModal=closeEditProfileModal;
+    window.viewPublicTripFromProfile=viewPublicTripFromProfile;
+    window.rateTrip = rateTrip;
+    window.toggleFavorite = toggleFavorite;
+    window.removeFavorite = removeFavorite;
+    window.addComment = addComment;
+    window.addReply = addReply;
+    window.showReplyForm = showReplyForm;
+    window.submitReply = submitReply;
+    window.submitNewComment = submitNewComment;
+
+    showSignupBtn?.addEventListener('click',showSignup); showLoginBtn?.addEventListener('click',showLogin);
+    backToLandingFromSignup?.addEventListener('click',showLanding); backToLandingFromLogin?.addEventListener('click',showLanding);
+    switchToLoginFromSignup?.addEventListener('click',showLogin); switchToSignupFromLogin?.addEventListener('click',showSignup);
+    doSignupBtn?.addEventListener('click',handleSignup); doLoginBtn?.addEventListener('click',handleLogin);
+    saveTripBtn?.addEventListener('click',saveTrip);
+    document.getElementById('updateTripBtn')?.addEventListener('click',updateTrip);
+    document.getElementById('saveItineraryChangesBtn')?.addEventListener('click',saveItineraryChanges);
+
+    document.querySelectorAll('.nav-item').forEach(btn=>{ btn.addEventListener('click',()=>{ const nav=btn.dataset.nav; if(nav==='home') switchToHomeView(); else if(nav==='explore') showExploreView(); else if(nav==='favorites') showFavoritesView(); else if(nav==='add') showAddTripView(); else if(nav==='trips') showTripsView(); else if(nav==='profile') showProfileView(); }); });
+
+    loadUsersFromStorage(); loadTripsFromStorage(); setupFilterListeners(); if(!checkAutoLogin()) showLanding();
+</script>
+</body>
+</html>
