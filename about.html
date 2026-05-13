@@ -63,7 +63,6 @@
             gap: 1rem;
         }
 
-        /* Logo TVET MARA - gambar */
         .logo-img {
             height: 50px;
             width: 150px;
@@ -638,7 +637,64 @@
     </div>
 </div>
 
+<!-- Audio untuk background music -->
+<audio id="pianoAudio" preload="auto" loop>
+    <source src="piano.mp3" type="audio/mpeg">
+    <source src="piano.wav" type="audio/wav">
+</audio>
+
 <script>
+    // ========== SOUND UNTUK ABOUT PAGE (CONTINUOUS) ==========
+    const audioElement = document.getElementById('pianoAudio');
+    let soundStarted = false;
+
+    if (audioElement) {
+        audioElement.volume = 0.3;
+        audioElement.loop = true;
+    }
+
+    function startAndSaveSound() {
+        if (soundStarted) return;
+        
+        if (audioElement) {
+            audioElement.play().then(() => {
+                soundStarted = true;
+                sessionStorage.setItem('soundStarted', 'true');
+                sessionStorage.setItem('soundTime', '0');
+                console.log("🎵 Sound started in About page");
+            }).catch(err => {
+                console.log("Play failed:", err);
+            });
+        }
+    }
+
+    // Check if sound was playing before (from previous page)
+    if (sessionStorage.getItem('soundStarted') === 'true') {
+        if (audioElement && !soundStarted) {
+            let savedTime = parseFloat(sessionStorage.getItem('soundTime') || '0');
+            audioElement.currentTime = savedTime;
+            audioElement.play().then(() => {
+                soundStarted = true;
+                console.log("Sound continued from time:", savedTime);
+            }).catch(err => console.log(err));
+        }
+    }
+
+    // Save current time every second
+    setInterval(() => {
+        if (audioElement && !audioElement.paused && soundStarted) {
+            sessionStorage.setItem('soundTime', audioElement.currentTime);
+        }
+    }, 1000);
+
+    // Start sound on first click if not started
+    document.addEventListener('click', () => {
+        if (!soundStarted && sessionStorage.getItem('soundStarted') !== 'true') {
+            startAndSaveSound();
+        }
+    }, { once: true });
+
+    // ========== SIDEBAR & MODAL ==========
     const hamburgerBtn = document.getElementById('hamburgerBtn');
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('overlay');
