@@ -644,9 +644,10 @@
 </audio>
 
 <script>
-    // ========== SOUND UNTUK ABOUT PAGE (CONTINUOUS) ==========
+    // ========== SOUND UNTUK ABOUT PAGE (CONTINUOUS & MOBILE FRIENDLY) ==========
     const audioElement = document.getElementById('pianoAudio');
     let soundStarted = false;
+    let playAttempted = false;
 
     if (audioElement) {
         audioElement.volume = 0.3;
@@ -660,39 +661,62 @@
             audioElement.play().then(() => {
                 soundStarted = true;
                 sessionStorage.setItem('soundStarted', 'true');
-                sessionStorage.setItem('soundTime', '0');
-                console.log("🎵 Sound started in About page");
+                console.log("🎵 Sound playing in About page");
             }).catch(err => {
                 console.log("Play failed:", err);
             });
         }
     }
 
-    // Check if sound was playing before (from previous page)
+    // Check if sound was playing before (from previous page like index.html)
     if (sessionStorage.getItem('soundStarted') === 'true') {
         if (audioElement && !soundStarted) {
             let savedTime = parseFloat(sessionStorage.getItem('soundTime') || '0');
-            audioElement.currentTime = savedTime;
+            if (savedTime > 0) {
+                audioElement.currentTime = savedTime;
+            }
+            // Try to continue playing
             audioElement.play().then(() => {
                 soundStarted = true;
                 console.log("Sound continued from time:", savedTime);
-            }).catch(err => console.log(err));
+            }).catch(err => {
+                console.log("Auto-play blocked, waiting for user click on About page");
+                // Sound will start on user click
+                soundStarted = false;
+            });
         }
     }
 
     // Save current time every second
     setInterval(() => {
-        if (audioElement && !audioElement.paused && soundStarted) {
+        if (audioElement && !audioElement.paused && (soundStarted || sessionStorage.getItem('soundStarted') === 'true')) {
             sessionStorage.setItem('soundTime', audioElement.currentTime);
+            sessionStorage.setItem('soundStarted', 'true');
         }
     }, 1000);
 
-    // Start sound on first click if not started
-    document.addEventListener('click', () => {
+    // Start sound on ANY user click (for mobile devices)
+    document.body.addEventListener('click', function() {
+        if (!soundStarted && !playAttempted) {
+            playAttempted = true;
+            if (audioElement) {
+                audioElement.play().then(() => {
+                    soundStarted = true;
+                    sessionStorage.setItem('soundStarted', 'true');
+                    console.log("🎵 Sound started after user click");
+                }).catch(err => {
+                    console.log("Still cannot play:", err);
+                });
+            }
+        }
+    });
+
+    // Also try to play on page load (may work on desktop)
+    setTimeout(() => {
         if (!soundStarted && sessionStorage.getItem('soundStarted') !== 'true') {
             startAndSaveSound();
         }
-    }, { once: true });
+    }, 500);
 
     // ========== SIDEBAR & MODAL ==========
     const hamburgerBtn = document.getElementById('hamburgerBtn');
