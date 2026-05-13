@@ -228,7 +228,7 @@ if (backBtn) {
             sessionStorage.setItem('soundTime', audioElement.currentTime);
             sessionStorage.setItem('soundStarted', 'true');
         }
-        window.location.href = 'medicare.html';
+        window.location.href = 'index.html';
     });
 }
 
