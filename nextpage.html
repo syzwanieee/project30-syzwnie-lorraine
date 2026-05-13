@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Project Team | Our Applications</title>
+    <link rel="stylesheet" href="nextpage.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body class="dark">
+    
+    <!-- DARK MODE BACKGROUND -->
+    <div class="animated-bg-dark" id="darkBg">
+        <div class="nebula"></div>
+        <div class="nebula2"></div>
+        <div class="stars-container" id="starfield"></div>
+        <div id="shootingStarsContainer"></div>
+    </div>
+
+    <!-- LIGHT MODE BACKGROUND -->
+    <div class="golden-sprinkle" id="goldenSprinkle" style="display: none;"></div>
+    <div class="golden-sparkle" id="goldenSparkle" style="display: none;"></div>
+
+    <!-- Audio -->
+    <audio id="pianoAudio" preload="auto" loop>
+        <source src="piano.mp3" type="audio/mpeg">
+        <source src="piano.wav" type="audio/wav">
+    </audio>
+
+    <div class="container">
+        <h1>✨ Our Team & Applications ✨</h1>
+        
+        <div class="team-grid">
+            <!-- Card 1: MEDICARE -->
+            <div class="team-card">
+                <div class="profile-img-wrapper" id="clickWanie">
+                    <img src="waniee.jpeg" alt="Nursyazwanie" class="profile-img">
+                    <div class="img-overlay">
+                        <i class="fas fa-eye"></i> View App
+                    </div>
+                </div>
+                <h3>Nursyazwanie</h3>
+                <div class="app-logo">
+                    <i class="fas fa-hospital-user"></i>
+                </div>
+                <div class="app-name">MEDICARE</div>
+                <button class="go-btn" data-page="medicare.html">
+                    GO! <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+
+            <!-- Card 2: TripTrace -->
+            <div class="team-card">
+                <div class="profile-img-wrapper" id="clickLily">
+                    <img src="lily.jpeg" alt="Lily Liyana Lorraine" class="profile-img">
+                    <div class="img-overlay">
+                        <i class="fas fa-eye"></i> View App
+                    </div>
+                </div>
+                <h3>Lily Liyana Lorraine</h3>
+                <div class="app-logo">
+                    <i class="fas fa-map-marked-alt"></i>
+                </div>
+                <div class="app-name">TripTrace</div>
+                <button class="go-btn" data-page="triptrace.html">
+                    GO! <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Back Button -->
+    <button class="back-btn" id="backBtn">
+        <i class="fas fa-arrow-left"></i> Back to Main
+    </button>
+
+    <!-- Theme Toggle -->
+    <div class="theme-switch" id="themeToggle">
+        <i class="fas fa-sun" id="sunIcon"></i>
+        <i class="fas fa-moon" id="moonIcon" style="display: none;"></i>
+        <span id="themeText">Dark</span>
+    </div>
+
+    <!-- MODAL POPUP -->
+    <div id="appModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-logo">
+                <img src="ubat.png" alt="App Logo" id="modalLogoImg">
+            </div>
+            <h2 id="modalAppName">MEDICARE</h2>
+            <p id="modalCreator">created by NURSYAZWANIE</p>
+            <button class="modal-close-btn" id="closeModalBtn">Close</button>
+        </div>
+    </div>
+
+    <script src="nextpage.js"></script>
+</body>
+</html>

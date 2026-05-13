@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>MEDICARE - Music Therapy</title>
+    <link rel="stylesheet" href="music.css">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+<body>
+    <div class="leaf-bg">
+        <div class="leaf leaf-1"></div>
+        <div class="leaf leaf-2"></div>
+        <div class="leaf leaf-3"></div>
+        <div class="leaf leaf-4"></div>
+        <div class="leaf leaf-5"></div>
+        <div class="leaf leaf-6"></div>
+        <div class="leaf leaf-7"></div>
+        <div class="leaf leaf-8"></div>
+        <div class="leaf leaf-9"></div>
+        <div class="leaf leaf-10"></div>
+        <div class="leaf leaf-11"></div>
+        <div class="leaf leaf-12"></div>
+    </div>
+
+    <div class="main-container">
+        <!-- Header -->
+        <div class="header">
+            <button class="back-btn" id="backBtn">← Back</button>
+            <h1>🎵 Music Therapy</h1>
+            <div></div>
+        </div>
+
+        <!-- GIF Slideshow -->
+        <div class="gif-slideshow">
+            <div class="gif-container">
+                <img src="pantai.gif" alt="Beach" class="gif-slide active" id="gif1" onerror="this.src='https://via.placeholder.com/400x200?text=Beach'">
+                <img src="bunga.gif" alt="Flower" class="gif-slide" id="gif2" onerror="this.src='https://via.placeholder.com/400x200?text=Flower'">
+            </div>
+            <div class="gif-caption" id="gifCaption">🌊 Calm Beach Waves</div>
+            <div class="gif-dots">
+                <span class="dot active" data-index="0"></span>
+                <span class="dot" data-index="1"></span>
+            </div>
+        </div>
+
+        <!-- Music Player -->
+        <div class="music-player">
+            <div class="player-header">
+                <div class="music-icon">🎵</div>
+                <h2>Relaxing Music Therapy</h2>
+                <div class="music-icon">🎶</div>
+            </div>
+            
+            <div class="song-info">
+                <div class="song-title" id="songTitle">Calm Relaxation</div>
+                <div class="song-artist" id="songArtist">Healing Music</div>
+            </div>
+
+            <!-- Nature Image (will appear when playing) -->
+            <div class="nature-image-container" id="natureImageContainer">
+                <img src="piano.jpg" alt="Relaxing Nature" class="nature-img" id="natureImg" onerror="this.src='https://picsum.photos/300/200?random=100'">
+            </div>
+
+            <!-- Audio Element -->
+            <audio id="audioPlayer" loop>
+                <source src="piano.mp3" type="audio/mpeg">
+                Your browser does not support the audio element.
+            </audio>
+
+            <!-- Player Controls -->
+            <div class="player-controls">
+                <button class="control-btn" id="playPauseBtn">▶</button>
+                <button class="control-btn" id="loopBtn" title="Loop">🔄</button>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="progress-container">
+                <span class="time-current" id="currentTime">0:00</span>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <span class="time-duration" id="duration">0:00</span>
+            </div>
+
+            <!-- Volume Control -->
+            <div class="volume-control">
+                <span class="volume-icon">🔊</span>
+                <input type="range" id="volumeSlider" min="0" max="70" value="70">
+            </div>
+        </div>
+
+        <!-- Quote Section -->
+        <div class="quote-section">
+            <p class="quote-text">🎵 "Music can heal the soul and calm the mind" 🎵</p>
+        </div>
+
+        <!-- Info Box -->
+        <div class="info-box">
+            <p>💡 <strong>Tip:</strong> Close your eyes, take deep breaths, and let the music relax your mind and body.</p>
+        </div>
+    </div>
+
+    <script src="music.js"></script>
+    <script src="darkmodeall.js"></script>
+</body>
+</html>

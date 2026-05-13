@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>MEDICARE - Sleep Reminder</title>
+    <link rel="stylesheet" href="sleep.css">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+<body>
+    <div class="leaf-bg">
+        <div class="leaf leaf-1"></div>
+        <div class="leaf leaf-2"></div>
+        <div class="leaf leaf-3"></div>
+        <div class="leaf leaf-4"></div>
+        <div class="leaf leaf-5"></div>
+        <div class="leaf leaf-6"></div>
+        <div class="leaf leaf-7"></div>
+        <div class="leaf leaf-8"></div>
+        <div class="leaf leaf-9"></div>
+        <div class="leaf leaf-10"></div>
+        <div class="leaf leaf-11"></div>
+        <div class="leaf leaf-12"></div>
+    </div>
+
+    <div class="main-container">
+        <!-- Header -->
+        <div class="header">
+            <button class="back-btn" id="backBtn">← Back</button>
+            <h1>😴 Sleep Reminder</h1>
+            <div></div>
+        </div>
+
+        <!-- Animation Section -->
+        <div class="animation-section">
+            <div class="moon-container">
+                <div class="moon">🌙</div>
+                <div class="stars">
+                    <div class="star">⭐</div>
+                    <div class="star">✨</div>
+                    <div class="star">🌟</div>
+                </div>
+                <div class="clouds">
+                    <div class="cloud">☁️</div>
+                    <div class="cloud">☁️</div>
+                    <div class="cloud">☁️</div>
+                </div>
+                <div class="wind"></div>
+            </div>
+            <p class="animation-text">😴 Time to rest and recharge 😴</p>
+        </div>
+
+        <!-- Sleep Settings Card -->
+        <div class="settings-card">
+            <h2>🌙 Sleep Schedule</h2>
+            
+            <div class="setting-group">
+                <label>⏰ Bedtime</label>
+                <input type="time" id="bedtime" value="22:00">
+                <p class="hint">Set your preferred bedtime</p>
+            </div>
+
+            <div class="setting-group">
+                <label>⏰ Wake-up Time</label>
+                <input type="time" id="waketime" value="06:00">
+                <p class="hint">Set your preferred wake-up time</p>
+            </div>
+
+            <div class="setting-group">
+                <label>🔔 Reminder</label>
+                <div class="toggle-switch">
+                    <input type="checkbox" id="sleepReminderToggle" checked>
+                    <span class="toggle-slider"></span>
+                    <span class="toggle-label">Enable sleep reminder</span>
+                </div>
+            </div>
+
+            <button id="saveSleepBtn" class="btn-save">💾 Save Sleep Settings</button>
+        </div>
+
+        <!-- Sleep Tips Card -->
+        <div class="tips-card">
+            <h3>💡 Sleep Tips</h3>
+            <ul class="tips-list">
+                <li>🌙 Go to bed at the same time every night</li>
+                <li>📱 Avoid screens 30 minutes before bed</li>
+                <li>☕ Reduce caffeine intake in the evening</li>
+                <li>🧘 Practice relaxation techniques</li>
+                <li>🛌 Keep your bedroom dark and cool</li>
+            </ul>
+        </div>
+
+        <!-- Info Box -->
+        <div class="info-box">
+            <p>💡 <strong>Tip:</strong> You will receive a notification at your set bedtime to remind you to sleep. Get enough rest for better health!</p>
+        </div>
+    </div>
+
+    <script src="sleep.js"></script>
+    <script src="darkmodeall.js"></script>
+</body>
+</html>

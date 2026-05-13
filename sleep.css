@@ -1,0 +1,468 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #1a1a3a 0%, #2a2a5a 40%, #1a1a4a 100%);
+    position: relative;
+    padding: 20px;
+    overflow: hidden;
+}
+
+/* Leaves Background - Darker for night theme */
+.leaf-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.leaf {
+    position: absolute;
+    background: rgba(100, 140, 120, 0.15);
+    border-radius: 95% 0 85% 15% / 70% 60% 40% 30%;
+    pointer-events: none;
+    filter: blur(2px);
+}
+
+.leaf-1 { width: 140px; height: 120px; top: 5%; left: -30px; animation: floatLeaf 20s ease-in-out infinite; transform: rotate(25deg); }
+.leaf-2 { width: 180px; height: 150px; bottom: 5%; right: -40px; animation: floatLeaf 25s ease-in-out infinite reverse; transform: rotate(70deg); }
+.leaf-3 { width: 120px; height: 100px; top: 15%; right: 5%; animation: floatLeaf 18s ease-in-out infinite 2s; transform: rotate(110deg); }
+.leaf-4 { width: 160px; height: 130px; bottom: 20%; left: 5%; animation: floatLeaf 22s ease-in-out infinite 1s; transform: rotate(55deg); }
+.leaf-5 { width: 130px; height: 110px; top: 50%; right: 15%; animation: floatLeaf 19s ease-in-out infinite 3s; transform: rotate(140deg); }
+.leaf-6 { width: 200px; height: 170px; top: 70%; left: -50px; animation: floatLeaf 28s ease-in-out infinite 0.5s; transform: rotate(35deg); }
+.leaf-7 { width: 100px; height: 85px; top: 10%; left: 25%; animation: floatLeaf 16s ease-in-out infinite 4s; transform: rotate(85deg); }
+.leaf-8 { width: 150px; height: 125px; bottom: 8%; right: 15%; animation: floatLeaf 21s ease-in-out infinite 2.5s; transform: rotate(160deg); }
+.leaf-9 { width: 90px; height: 75px; top: 35%; left: 8%; animation: floatLeaf 17s ease-in-out infinite 1.5s; transform: rotate(45deg); }
+.leaf-10 { width: 135px; height: 115px; top: 80%; right: 0%; animation: floatLeaf 23s ease-in-out infinite 3.5s; transform: rotate(120deg); }
+.leaf-11 { width: 110px; height: 95px; top: 45%; right: 30%; animation: floatLeaf 15s ease-in-out infinite 1.2s; transform: rotate(95deg); }
+.leaf-12 { width: 170px; height: 145px; top: 25%; left: 15%; animation: floatLeaf 26s ease-in-out infinite 2.2s; transform: rotate(50deg); }
+
+@keyframes floatLeaf {
+    0% { transform: translateY(0px) rotate(0deg) scale(1); opacity: 0.2; }
+    50% { transform: translateY(-30px) rotate(10deg) scale(1.05); opacity: 0.35; }
+    100% { transform: translateY(0px) rotate(0deg) scale(1); opacity: 0.2; }
+}
+
+/* Main Container */
+.main-container {
+    position: relative;
+    z-index: 2;
+    max-width: 700px;
+    margin: 0 auto;
+    width: 100%;
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.main-container::-webkit-scrollbar {
+    display: none;
+}
+
+/* Header */
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 25px;
+    gap: 15px;
+}
+
+.back-btn {
+    background: rgba(255,255,255,0.2);
+    border: none;
+    padding: 10px 18px;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: white;
+    cursor: pointer;
+    backdrop-filter: blur(5px);
+    transition: 0.2s;
+}
+
+.back-btn:hover {
+    background: rgba(255,255,255,0.4);
+    transform: translateX(-3px);
+}
+
+.header h1 {
+    color: white;
+    font-size: 1.4rem;
+    text-shadow: 0 0 10px rgba(100,150,255,0.5);
+}
+
+/* Animation Section */
+.animation-section {
+    text-align: center;
+    margin-bottom: 30px;
+    padding: 20px;
+    background: rgba(0,0,0,0.2);
+    border-radius: 30px;
+    backdrop-filter: blur(5px);
+}
+
+.moon-container {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 150px;
+}
+
+.moon {
+    font-size: 5rem;
+    animation: moonGlow 3s ease-in-out infinite, float 4s ease-in-out infinite;
+    filter: drop-shadow(0 0 20px rgba(255,255,200,0.5));
+}
+
+@keyframes moonGlow {
+    0%, 100% { text-shadow: 0 0 10px rgba(255,255,200,0.5); }
+    50% { text-shadow: 0 0 30px rgba(255,255,200,0.8); }
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+}
+
+.stars {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+}
+
+.star {
+    position: absolute;
+    font-size: 1.2rem;
+    animation: twinkle 2s ease-in-out infinite;
+}
+
+.star:nth-child(1) { top: 10px; left: 20%; animation-delay: 0s; }
+.star:nth-child(2) { top: 30px; right: 25%; animation-delay: 0.5s; }
+.star:nth-child(3) { bottom: 20px; left: 30%; animation-delay: 1s; }
+
+@keyframes twinkle {
+    0%, 100% { opacity: 0.3; transform: scale(0.8); }
+    50% { opacity: 1; transform: scale(1.2); }
+}
+
+.clouds {
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-around;
+    pointer-events: none;
+}
+
+.cloud {
+    font-size: 2rem;
+    opacity: 0.6;
+    animation: cloudMove 10s linear infinite;
+}
+
+.cloud:nth-child(1) { animation-delay: 0s; }
+.cloud:nth-child(2) { animation-delay: -3s; }
+.cloud:nth-child(3) { animation-delay: -6s; }
+
+@keyframes cloudMove {
+    0% { transform: translateX(-100px); opacity: 0; }
+    10% { opacity: 0.6; }
+    90% { opacity: 0.6; }
+    100% { transform: translateX(100px); opacity: 0; }
+}
+
+.animation-text {
+    margin-top: 20px;
+    color: rgba(255,255,255,0.9);
+    font-size: 1rem;
+    font-weight: 500;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.7; }
+    50% { opacity: 1; }
+}
+
+/* Settings Card */
+.settings-card {
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 30px;
+    padding: 25px;
+    margin-bottom: 20px;
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+.settings-card h2 {
+    color: white;
+    margin-bottom: 20px;
+    font-size: 1.2rem;
+    text-align: center;
+}
+
+.setting-group {
+    margin-bottom: 20px;
+}
+
+.setting-group label {
+    display: block;
+    color: rgba(255,255,255,0.9);
+    font-weight: 600;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+}
+
+.setting-group input {
+    width: 100%;
+    padding: 12px 15px;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 60px;
+    color: white;
+    font-size: 1rem;
+    font-family: inherit;
+}
+
+.setting-group input:focus {
+    outline: none;
+    border-color: #6aa85f;
+}
+
+.hint {
+    font-size: 0.7rem;
+    color: rgba(255,255,255,0.5);
+    margin-top: 5px;
+}
+
+/* Toggle Switch */
+.toggle-switch {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.toggle-switch input {
+    display: none;
+}
+
+.toggle-slider {
+    width: 50px;
+    height: 24px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 34px;
+    cursor: pointer;
+    position: relative;
+    transition: 0.3s;
+}
+
+.toggle-slider:before {
+    content: "";
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    left: 3px;
+    bottom: 3px;
+    background: white;
+    border-radius: 50%;
+    transition: 0.3s;
+}
+
+input:checked + .toggle-slider {
+    background: #6aa85f;
+}
+
+input:checked + .toggle-slider:before {
+    transform: translateX(26px);
+}
+
+.toggle-label {
+    color: white;
+    font-size: 0.85rem;
+}
+
+/* Save Button */
+.btn-save {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(115deg, #6aa85f, #4e9448);
+    color: white;
+    border: none;
+    border-radius: 60px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+    margin-top: 10px;
+}
+
+.btn-save:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+}
+
+/* Tips Card */
+.tips-card {
+    background: rgba(0,0,0,0.3);
+    backdrop-filter: blur(8px);
+    border-radius: 25px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.tips-card h3 {
+    color: white;
+    margin-bottom: 15px;
+    font-size: 1rem;
+}
+
+.tips-list {
+    list-style: none;
+    padding: 0;
+}
+
+.tips-list li {
+    color: rgba(255,255,255,0.8);
+    padding: 8px 0;
+    font-size: 0.85rem;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+/* Info Box */
+.info-box {
+    background: rgba(0,0,0,0.2);
+    backdrop-filter: blur(8px);
+    border-radius: 20px;
+    padding: 15px;
+    text-align: center;
+}
+
+.info-box p {
+    color: rgba(255,255,255,0.8);
+    font-size: 0.85rem;
+}
+
+/* Responsive */
+@media (max-width: 550px) {
+    body {
+        padding: 15px;
+    }
+    
+    .header h1 {
+        font-size: 1.2rem;
+    }
+    
+    .back-btn {
+        padding: 8px 14px;
+        font-size: 0.9rem;
+    }
+    
+    .moon {
+        font-size: 3.5rem;
+    }
+    
+    .cloud {
+        font-size: 1.5rem;
+    }
+    
+    .settings-card {
+        padding: 18px;
+    }
+}
+
+/* ========== SLIDESHOW STYLES ========== */
+.sleep-slideshow {
+    margin: 20px 0;
+    border-radius: 20px;
+    overflow: hidden;
+    background: rgba(255,255,255,0.3);
+    padding: 10px;
+}
+
+.slideshow-container {
+    position: relative;
+    width: 100%;
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.slide-img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 16px;
+    transition: opacity 0.5s ease;
+}
+
+.slideshow-caption {
+    text-align: center;
+    padding: 10px;
+    background: rgba(0,0,0,0.6);
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 0 0 16px 16px;
+}
+
+.slideshow-dots {
+    text-align: center;
+    padding: 10px 0;
+}
+
+.slideshow-dots .dot {
+    height: 10px;
+    width: 10px;
+    margin: 0 5px;
+    background-color: rgba(255,255,255,0.5);
+    border-radius: 50%;
+    display: inline-block;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.slideshow-dots .dot.active {
+    background-color: #4CAF50;
+    transform: scale(1.2);
+}
+
+.slideshow-dots .dot:hover {
+    background-color: #6aa85f;
+}
+
+/* Dark mode slideshow */
+body.dark-mode .sleep-slideshow {
+    background: rgba(0,0,0,0.3);
+}
+
+body.dark-mode .slideshow-caption {
+    background: rgba(0,0,0,0.7);
+    color: #c4e0b5;
+}
+
+/* Responsive */
+@media (max-width: 550px) {
+    .slide-img {
+        height: 150px;
+    }
+    
+    .slideshow-caption {
+        font-size: 12px;
+        padding: 8px;
+    }
+}

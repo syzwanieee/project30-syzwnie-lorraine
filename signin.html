@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>MEDICARE - Sign In / Register</title>
+    <link rel="stylesheet" href="signin.css">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+<body>
+    <!-- Background leaves -->
+    <div class="leaf-bg">
+        <div class="leaf leaf-1"></div>
+        <div class="leaf leaf-2"></div>
+        <div class="leaf leaf-3"></div>
+        <div class="leaf leaf-4"></div>
+        <div class="leaf leaf-5"></div>
+        <div class="leaf leaf-6"></div>
+        <div class="leaf leaf-7"></div>
+        <div class="leaf leaf-8"></div>
+        <div class="leaf leaf-9"></div>
+        <div class="leaf leaf-10"></div>
+    </div>
+
+    <div class="web-wrapper">
+        <div class="content-card">
+            <div class="header">
+                <img src="ubat.png" alt="MEDICARE" class="logo-small">
+                <h2 id="formTitle">Account Registration</h2>
+            </div>
+
+            <!-- No language selector - English only -->
+            <!-- No sound button - removed -->
+
+            <!-- Registration Form -->
+            <form id="registerForm">
+                <div class="form-group">
+                    <label id="labelName">Full Name</label>
+                    <input type="text" id="fullName" placeholder="e.g: Ahmad bin Abdullah" required>
+                </div>
+
+                <div class="form-group">
+                    <label id="labelPhone">Phone Number</label>
+                    <input type="tel" id="phoneNo" placeholder="012-3456789" required>
+                </div>
+
+                <div class="form-group">
+                    <label id="labelAddress">Address</label>
+                    <input type="text" id="address" placeholder="Street, Taman..." required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label id="labelPostcode">Postcode</label>
+                        <input type="text" id="postcode" placeholder="43000" required>
+                    </div>
+                    <div class="form-group">
+                        <label id="labelCity">City</label>
+                        <input type="text" id="city" placeholder="Kajang" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label id="labelState">State</label>
+                    <select id="state" required>
+                        <option value="">-- Select State --</option>
+                        <option value="Johor">Johor</option>
+                        <option value="Kedah">Kedah</option>
+                        <option value="Kelantan">Kelantan</option>
+                        <option value="Melaka">Melaka</option>
+                        <option value="Negeri Sembilan">Negeri Sembilan</option>
+                        <option value="Pahang">Pahang</option>
+                        <option value="Penang">Penang</option>
+                        <option value="Perak">Perak</option>
+                        <option value="Perlis">Perlis</option>
+                        <option value="Sabah">Sabah</option>
+                        <option value="Sarawak">Sarawak</option>
+                        <option value="Selangor">Selangor</option>
+                        <option value="Terengganu">Terengganu</option>
+                        <option value="Kuala Lumpur">Kuala Lumpur</option>
+                        <option value="Labuan">Labuan</option>
+                        <option value="Putrajaya">Putrajaya</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn-sign" id="submitBtn">📝 Sign Up</button>
+            </form>
+
+            <div class="back-link">
+                <a href="medicare.html">← Back to Main Page</a>
+            </div>
+
+            <div id="formMessage" class="message"></div>
+        </div>
+    </div>
+
+    <script src="signin.js"></script>
+</body>
+</html>

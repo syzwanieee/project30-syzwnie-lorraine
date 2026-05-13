@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>MEDICARE - Settings</title>
+    <link rel="stylesheet" href="setting.css">
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+<body>
+    <div class="leaf-bg">
+        <div class="leaf leaf-1"></div>
+        <div class="leaf leaf-2"></div>
+        <div class="leaf leaf-3"></div>
+        <div class="leaf leaf-4"></div>
+        <div class="leaf leaf-5"></div>
+        <div class="leaf leaf-6"></div>
+        <div class="leaf leaf-7"></div>
+        <div class="leaf leaf-8"></div>
+        <div class="leaf leaf-9"></div>
+        <div class="leaf leaf-10"></div>
+        <div class="leaf leaf-11"></div>
+        <div class="leaf leaf-12"></div>
+    </div>
+
+    <div class="main-container">
+        <!-- Header -->
+        <div class="header">
+            <button class="back-btn" onclick="goBack()">← Back</button>
+            <h1>⚙️ Settings</h1>
+            <div></div>
+        </div>
+
+        <!-- Settings Menu -->
+        <div class="settings-container">
+            <!-- Notification Setting -->
+            <div class="setting-card">
+                <div class="setting-info">
+                    <div class="setting-icon">🔔</div>
+                    <div class="setting-text">
+                        <h3>Notifications</h3>
+                        <p>Receive medication reminders and health tips</p>
+                    </div>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="notificationToggle">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <!-- Dark Mode Setting -->
+            <div class="setting-card">
+                <div class="setting-info">
+                    <div class="setting-icon">🌙</div>
+                    <div class="setting-text">
+                        <h3>Dark Mode</h3>
+                        <p>Switch to dark theme for comfortable viewing</p>
+                    </div>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="darkModeToggle">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <!-- Text-to-Speech Setting -->
+            <div class="setting-card">
+                <div class="setting-info">
+                    <div class="setting-icon">🔊</div>
+                    <div class="setting-text">
+                        <h3>Text-to-Speech</h3>
+                        <p>Enable voice assistance for instructions</p>
+                    </div>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="ttsToggle" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <!-- Language Setting -->
+            <div class="setting-card">
+                <div class="setting-info">
+                    <div class="setting-icon">🌐</div>
+                    <div class="setting-text">
+                        <h3>Language</h3>
+                        <p>Change app language</p>
+                    </div>
+                </div>
+                <button class="lang-btn" id="langBtn">Change Language</button>
+            </div>
+
+            <!-- About Section -->
+            <div class="setting-card">
+                <div class="setting-info">
+                    <div class="setting-icon">ℹ️</div>
+                    <div class="setting-text">
+                        <h3>About MEDICARE</h3>
+                        <p>Version 1.0.0 | Your Health Companion</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Logout Button -->
+            <button id="logoutBtn" class="btn-logout">🚪 Logout</button>
+        </div>
+    </div>
+
+    <!-- Language Modal -->
+    <div id="languageModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">🌐 Select Language</h3>
+                <span class="close-modal" id="closeModalBtn">&times;</span>
+            </div>
+            <div class="modal-body">
+                <button class="lang-option" data-lang="ms">🇲🇾 Bahasa Melayu</button>
+                <button class="lang-option" data-lang="en">🇬🇧 English</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="setting.js"></script>
+    <script src="darkmodeall.js"></script>
+</body>
+</html>

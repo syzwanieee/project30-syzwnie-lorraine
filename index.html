@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Project Activities | Golden Sprinkle + Continuous Piano</title>
+    <link rel="stylesheet" href="index.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body class="dark">
+    
+    <!-- DARK MODE ANIMATED BACKGROUND -->
+    <div class="animated-bg-dark" id="darkBg">
+        <div class="nebula"></div>
+        <div class="nebula2"></div>
+        <div class="stars-container" id="starfield"></div>
+        <div id="shootingStarsContainer"></div>
+    </div>
+
+    <!-- LIGHT MODE - GOLDEN SPRINKLE BACKGROUND -->
+    <div class="golden-sprinkle" id="goldenSprinkle" style="display: none;"></div>
+    <div class="golden-sparkle" id="goldenSparkle" style="display: none;"></div>
+
+    <!-- Audio element untuk piano MP3 - continuous loop -->
+    <audio id="pianoAudio" preload="auto" loop>
+        <source src="piano.mp3" type="audio/mpeg">
+        <source src="piano.wav" type="audio/wav">
+    </audio>
+
+    <!-- Dark Mode Toggle -->
+    <div class="theme-switch" id="themeToggle">
+        <i class="fas fa-sun" id="sunIcon"></i>
+        <i class="fas fa-moon" id="moonIcon" style="display: none;"></i>
+        <span id="themeText">Dark</span>
+    </div>
+
+    <div class="sound-badge" id="soundStatus">
+        <i class="fas fa-music"></i> <span>Click anywhere to start audio ✨</span>
+    </div>
+
+    <!-- MAIN PAGE -->
+    <div id="mainPage" class="page">
+        <div class="glass-card">
+            <div class="corner-deco">✧</div>
+            <div class="corner-deco-right">✦</div>
+            <div class="greeting-icon" id="greetingIcon">🌙</div>
+            <div class="greeting-text" id="greetingText">Good Night!</div>
+            <div class="time-message" id="timeMsg">✨ welcome to our golden sprinkle universe ✨</div>
+            <div class="project-desc">
+                📌 this website is for our project activities
+            </div>
+            <div class="button-group">
+                <!-- About Us button now links directly to about.html -->
+                <a href="about.html" class="btn btn-outline" id="aboutUsBtn">
+                    <i class="fas fa-users"></i> About Us
+                </a>
+                <button class="btn btn-primary" id="nextPageBtn">
+                    Next Page <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="index.js"></script>
+</body>
+</html>

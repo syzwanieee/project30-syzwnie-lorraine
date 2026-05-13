@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>MEDICARE - Health Records</title>
+    <link rel="stylesheet" href="healthrecords.css">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+<body>
+    <div class="leaf-bg">
+        <div class="leaf leaf-1"></div>
+        <div class="leaf leaf-2"></div>
+        <div class="leaf leaf-3"></div>
+        <div class="leaf leaf-4"></div>
+        <div class="leaf leaf-5"></div>
+        <div class="leaf leaf-6"></div>
+        <div class="leaf leaf-7"></div>
+        <div class="leaf leaf-8"></div>
+        <div class="leaf leaf-9"></div>
+        <div class="leaf leaf-10"></div>
+        <div class="leaf leaf-11"></div>
+        <div class="leaf leaf-12"></div>
+    </div>
+
+    <div class="main-container">
+        <!-- Header -->
+        <div class="header">
+            <button class="back-btn" onclick="goBack()">← Back</button>
+            <h1>📋 Health Records</h1>
+            <div></div>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="summary-cards">
+            <div class="summary-card">
+                <div class="summary-icon">🏥</div>
+                <div class="summary-info">
+                    <h3 id="hospitalCount">0</h3>
+                    <p>Hospital Visits</p>
+                </div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-icon">💊</div>
+                <div class="summary-info">
+                    <h3 id="medicineCount">0</h3>
+                    <p>Medicines Taken</p>
+                </div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-icon">😴</div>
+                <div class="summary-info">
+                    <h3 id="sleepCount">0</h3>
+                    <p>Good Sleep</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Tabs -->
+        <div class="filter-tabs">
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="hospital">🏥 Hospital</button>
+            <button class="filter-btn" data-filter="medicine">💊 Medicine</button>
+            <button class="filter-btn" data-filter="sleep">😴 Sleep</button>
+        </div>
+
+        <!-- Records List -->
+        <div class="records-container">
+            <h2>Activity History</h2>
+            <div id="recordsList" class="records-list">
+                <!-- Records will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Info Box -->
+        <div class="info-box">
+            <p>💡 <strong>Tip:</strong> Your health activities are automatically recorded here. Data is saved in your browser.</p>
+        </div>
+    </div>
+
+    <script src="healthrecords.js"></script>
+    <script src="darkmodeall.js"></script>
+</body>
+</html>

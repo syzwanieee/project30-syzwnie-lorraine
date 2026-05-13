@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>MEDICARE - Nearby Hospitals</title>
+    <link rel="stylesheet" href="hospital.css">
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+<body>
+    <div class="leaf-bg">
+        <div class="leaf leaf-1"></div>
+        <div class="leaf leaf-2"></div>
+        <div class="leaf leaf-3"></div>
+        <div class="leaf leaf-4"></div>
+        <div class="leaf leaf-5"></div>
+        <div class="leaf leaf-6"></div>
+        <div class="leaf leaf-7"></div>
+        <div class="leaf leaf-8"></div>
+        <div class="leaf leaf-9"></div>
+        <div class="leaf leaf-10"></div>
+        <div class="leaf leaf-11"></div>
+        <div class="leaf leaf-12"></div>
+    </div>
+
+    <div class="main-container">
+        <!-- Header -->
+        <div class="header">
+            <button class="back-btn" id="backBtn">← Back</button>
+            <h1 id="pageTitle">🏥 Nearby Hospitals</h1>
+            <div></div>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="search-container">
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="searchInput" placeholder="Search hospital by name...">
+                <button class="clear-btn" id="clearSearchBtn">✖</button>
+            </div>
+        </div>
+
+        <!-- Location Button -->
+        <div class="location-container">
+            <button id="detectLocationBtn" class="btn-location">
+                📍 Detect My Location
+            </button>
+            <div id="locationStatus" class="location-status"></div>
+        </div>
+
+        <!-- Hospital List -->
+        <div class="hospital-list-container">
+            <h2 id="listTitle">Hospital List</h2>
+            <div id="hospitalList" class="hospital-list">
+                <div class="loading">Loading hospital data...</div>
+            </div>
+        </div>
+
+        <!-- Distance Filter -->
+        <div class="filter-container">
+            <h3 id="filterTitle">Filter by distance:</h3>
+            <div class="filter-buttons">
+                <button class="filter-btn" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="5">≤ 5 km</button>
+                <button class="filter-btn" data-filter="10">≤ 10 km</button>
+                <button class="filter-btn" data-filter="20">≤ 20 km</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="hospital.js"></script>
+    <script src="darkmodeall.js"></script>
+</body>
+</html>

@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>About Us - Pink Neon Glass</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at 20% 30%, #0d0d1a, #05050a);
+            min-height: 100vh;
+            color: #fff;
+            line-height: 1.5;
+            padding: 2rem 1.5rem;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 10% 20%, rgba(255, 20, 147, 0.15), transparent 50%),
+                radial-gradient(circle at 90% 70%, rgba(255, 105, 180, 0.12), transparent 60%),
+                radial-gradient(circle at 40% 80%, rgba(255, 0, 255, 0.08), transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Glassmorphism Navbar */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem 2rem;
+            background: rgba(20, 10, 30, 0.45);
+            backdrop-filter: blur(12px);
+            border-radius: 60px;
+            border: 1px solid rgba(255, 105, 180, 0.4);
+            box-shadow: 0 0 20px rgba(255, 20, 147, 0.2);
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        /* Logo TVET MARA - gambar */
+        .logo-img {
+            height: 50px;
+            width: 150px;
+            border-radius: 0px;
+            filter: drop-shadow(0 0 5px #ff69b4);
+            transition: all 0.3s;
+        }
+
+        .logo-img:hover {
+            filter: drop-shadow(0 0 12px #ff69b4);
+            transform: scale(1.02);
+        }
+
+        .hamburger {
+            background: rgba(255, 105, 180, 0.2);
+            border: 1px solid rgba(255, 105, 180, 0.5);
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            backdrop-filter: blur(8px);
+        }
+
+        .hamburger:hover {
+            background: rgba(255, 105, 180, 0.4);
+            box-shadow: 0 0 15px #ff69b4;
+            transform: scale(1.05);
+        }
+
+        .hamburger i {
+            font-size: 1.5rem;
+            color: #ff69b4;
+        }
+
+        /* Sidebar Menu */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 280px;
+            height: 100%;
+            background: rgba(20, 10, 35, 0.95);
+            backdrop-filter: blur(20px);
+            border-left: 1px solid rgba(255, 105, 180, 0.6);
+            box-shadow: -5px 0 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(255, 20, 147, 0.3);
+            z-index: 1000;
+            transition: right 0.3s ease;
+            padding: 2rem 1.5rem;
+        }
+
+        .sidebar.open {
+            right: 0;
+        }
+
+        .sidebar-header {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 2rem;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.8rem;
+            color: #ff69b4;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .close-btn:hover {
+            text-shadow: 0 0 10px #ff69b4;
+            transform: scale(1.1);
+        }
+
+        .sidebar-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .sidebar-menu a {
+            text-decoration: none;
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 1.2rem;
+            font-weight: 500;
+            padding: 0.8rem 1rem;
+            border-radius: 40px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sidebar-menu a i {
+            width: 28px;
+            color: #ff69b4;
+        }
+
+        .sidebar-menu a:hover {
+            background: rgba(255, 105, 180, 0.2);
+            color: #ff69b4;
+            padding-left: 1.5rem;
+            border: 1px solid rgba(255, 105, 180, 0.4);
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(3px);
+            z-index: 999;
+            display: none;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
+        /* Hero Section */
+        .about-hero {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .about-hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ff69b4, #ff1493, #ff99cc);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 20px rgba(255, 105, 180, 0.4);
+            margin-bottom: 1rem;
+        }
+
+        /* Team Section */
+        .team-section {
+            margin: 3rem 0 2rem 0;
+        }
+
+        .team-section h2 {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            color: #ffb6e6;
+            text-shadow: 0 0 5px #ff1493;
+        }
+
+        .team-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 2.5rem;
+        }
+
+        .team-member {
+            background: rgba(30, 18, 45, 0.6);
+            backdrop-filter: blur(12px);
+            border-radius: 1.8rem;
+            padding: 1.8rem;
+            text-align: center;
+            width: 300px;
+            position: relative;
+            border: 1px solid rgba(255, 105, 180, 0.4);
+            transition: 0.2s;
+        }
+
+        .team-member:hover {
+            border-color: #ff69b4;
+            box-shadow: 0 0 20px rgba(255, 20, 147, 0.3);
+        }
+
+        .profile-container {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 1rem;
+            display: block;
+            cursor: pointer;
+        }
+
+        .profile-img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #ff69b4;
+            box-shadow: 0 0 15px #ff69b4;
+            display: block;
+        }
+
+        .app-logo {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #ff69b4;
+            box-shadow: 0 0 10px #ff69b4;
+            background: #1a0a2a;
+            padding: 3px;
+            z-index: 3;
+            pointer-events: none;
+        }
+
+        .team-member h4 {
+            font-size: 1.3rem;
+            margin-bottom: 0.3rem;
+            color: #ffc0e0;
+        }
+
+        .role {
+            color: #ff99cc;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+
+        .whatsapp-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #25D366, #128C7E);
+            color: white;
+            padding: 8px 18px;
+            border-radius: 40px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-top: 0.8rem;
+            transition: all 0.2s;
+            border: none;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .whatsapp-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px #25D366;
+        }
+
+        /* Modal untuk zoom gambar */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            position: relative;
+            max-width: 90%;
+            max-height: 90%;
+        }
+
+        .modal-img {
+            width: auto;
+            max-width: 100%;
+            max-height: 85vh;
+            border-radius: 20px;
+            border: 3px solid #ff69b4;
+            box-shadow: 0 0 30px #ff69b4;
+            object-fit: contain;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: -40px;
+            right: -40px;
+            background: rgba(255, 105, 180, 0.8);
+            border: none;
+            color: white;
+            font-size: 2rem;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-close:hover {
+            background: #ff1493;
+            transform: scale(1.1);
+        }
+
+        @media (max-width: 768px) {
+            .modal-close {
+                top: -50px;
+                right: 0px;
+                width: 40px;
+                height: 40px;
+                font-size: 1.5rem;
+            }
+        }
+
+        /* Values Section */
+        .values {
+            background: rgba(20, 12, 35, 0.5);
+            backdrop-filter: blur(14px);
+            border-radius: 2rem;
+            padding: 2rem;
+            margin: 2rem 0 3rem 0;
+            text-align: center;
+            border: 1px solid rgba(255, 105, 180, 0.4);
+        }
+
+        .values h2 {
+            margin-bottom: 2rem;
+            color: #ffb6e6;
+        }
+
+        .value-items {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 2rem;
+        }
+
+        .value-item {
+            flex: 1;
+            min-width: 250px;
+            text-align: center;
+        }
+
+        .value-item i {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            display: inline-block;
+        }
+
+        .value-item h4 {
+            font-size: 1rem;
+            font-weight: 500;
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.85);
+            margin-bottom: 0.8rem;
+        }
+
+        .value-item p {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.6);
+            font-style: italic;
+        }
+
+        .triptrace-icon {
+            color: #ff69b4;
+            text-shadow: 0 0 10px #ff69b4;
+        }
+
+        .medicare-icon {
+            color: #00ffff;
+            text-shadow: 0 0 10px #00ffff;
+        }
+
+        .highlight-triptrace {
+            color: #ff69b4;
+            text-shadow: 0 0 8px #ff69b4;
+            font-weight: 700;
+        }
+
+        .highlight-medicare {
+            color: #00ffff;
+            text-shadow: 0 0 8px #00ffff;
+            font-weight: 700;
+        }
+
+        /* Story Grid */
+        .story-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin: 3rem 0;
+            background: rgba(30, 15, 45, 0.4);
+            backdrop-filter: blur(16px);
+            border-radius: 2rem;
+            padding: 2rem;
+            border: 1px solid rgba(255, 105, 180, 0.35);
+            box-shadow: 0 25px 40px -12px rgba(0, 0, 0, 0.4), 0 0 20px rgba(255, 20, 147, 0.15);
+        }
+
+        .story-text h2 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+            color: #ffb6e6;
+        }
+
+        .story-text p {
+            margin-bottom: 1rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .story-text .short-bio {
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .story-image {
+            background-image: url('AI.jpeg');
+            background-size: cover;
+            background-position: center;
+            border-radius: 1.5rem;
+            min-height: 280px;
+            border: 1px solid rgba(255, 105, 180, 0.5);
+            box-shadow: 0 0 30px rgba(255, 20, 147, 0.2);
+        }
+
+        .footer {
+            margin-top: 4rem;
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 105, 180, 0.3);
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+            .story-grid {
+                grid-template-columns: 1fr;
+                padding: 1.5rem;
+            }
+            .about-hero h1 {
+                font-size: 2.3rem;
+            }
+            .team-member {
+                width: 280px;
+            }
+            .app-logo {
+                width: 42px;
+                height: 42px;
+                bottom: 3px;
+                right: 3px;
+            }
+            .profile-container {
+                width: 130px;
+                height: 130px;
+            }
+            .value-item {
+                min-width: 100%;
+            }
+            .logo-img {
+                height: 40px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- Navbar Glass -->
+    <div class="navbar">
+        <img src="tvet.jpeg" alt="TVET MARA Logo" class="logo-img" onerror="this.src='https://placehold.co/150x50/ff69b4/white?text=TVET+MARA'">
+        <div class="hamburger" id="hamburgerBtn">
+            <i class="fas fa-bars"></i>
+        </div>
+    </div>
+
+    <!-- Sidebar Menu -->
+    <div class="overlay" id="overlay"></div>
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <button class="close-btn" id="closeSidebarBtn">&times;</button>
+        </div>
+        <div class="sidebar-menu">
+            <a href="index.html"><i class="fas fa-home"></i> Home</a>
+            <a href="about.html" class="active"><i class="fas fa-users"></i> About Us</a>
+            <a href="https://wa.me/601111512135?text=Hi%2C%20I%20am%20Lily%2C%20the%20developer%20of%20this%20About%20Us%20page%20😊" target="_blank">
+                <i class="fab fa-whatsapp"></i> Contact
+            </a>
+        </div>
+    </div>
+
+    <!-- Modal untuk zoom gambar -->
+    <div class="modal" id="imageModal">
+        <div class="modal-content">
+            <button class="modal-close" id="modalCloseBtn">&times;</button>
+            <img class="modal-img" id="modalImage" alt="Zoomed">
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <div class="about-hero">
+        <h1>MEET OUR TEAM !</h1>
+    </div>
+
+    <!-- ===== TEAM SECTION ===== -->
+    <div class="team-section">
+        <h2>👾 The Neon Crew</h2>
+        <div class="team-grid">
+            <!-- Lily -->
+            <div class="team-member">
+                <div class="profile-container">
+                    <img src="lily.jpeg" alt="Lily" class="profile-img" onerror="this.src='https://placehold.co/150x150/ff69b4/white?text=Lily'">
+                    <img src="logotriptrace.jpeg" alt="TripTrace Logo" class="app-logo" onerror="this.src='https://placehold.co/48x48/00ffff/white?text=TT'">
+                </div>
+                <h4>Lily</h4>
+                <div class="role">TripTrace Application Developer</div>
+                <a href="https://wa.me/601111512135" target="_blank" class="whatsapp-btn">
+                    <i class="fab fa-whatsapp"></i> WhatsApp Lily
+                </a>
+            </div>
+            <!-- Wanie -->
+            <div class="team-member">
+                <div class="profile-container">
+                    <img src="wanie.jpeg" alt="Wanie" class="profile-img" onerror="this.src='https://placehold.co/150x150/ff69b4/white?text=Wanie'">
+                    <img src="ubat.png" alt="Medicare Logo" class="app-logo" onerror="this.src='https://placehold.co/48x48/ff69b4/white?text=MC'">
+                </div>
+                <h4>Wanie</h4>
+                <div class="role">Medicare Application Developer</div>
+                <a href="https://wa.link/14qtqv" target="_blank" class="whatsapp-btn">
+                    <i class="fab fa-whatsapp"></i> WhatsApp Wanie
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== OUR CORE PILLARS ===== -->
+    <div class="values">
+        <h2>🌙 Our Core Pillars</h2>
+        <div class="value-items">
+            <div class="value-item">
+                <i class="fas fa-map-marked-alt triptrace-icon"></i>
+                <h4>With <span class="highlight-triptrace">TripTrace</span>, you can organize your trip from start to finish. Set your budget, plan your days, and share your favourite moments with a community of travellers.</h4>
+                <p>~ Lily (TripTrace's owner) ~</p>
+            </div>
+            <div class="value-item">
+                <i class="fas fa-hand-holding-heart medicare-icon"></i>
+                <h4><span class="highlight-medicare">Medicare</span> is an application that helps senior citizens and people with disabilities find treatment locations and understand the medications they need to take more easily.</h4>
+                <p>~ Wanie (Medicare's owner) ~</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== A LITTLE BIT ABOUT US ===== -->
+    <div class="story-grid">
+        <div class="story-text">
+            <h2>✧ A Little Bit About Us ✧</h2>
+            <p class="short-bio">We're Lily & Wanie, students of DIPLOMA IN COMPUTER TECHNOLOGY (BIG DATA) at TVETMARA LUMUT — two friends, developers, and dreamers. We build apps that matter: <span style="color:#ff69b4;">TripTrace</span> for travellers and <span style="color:#00ffff;">Medicare</span> for seniors. No fluff, just heart. ✨</p>
+            <p><i class="fas fa-quote-left" style="color:#ff69b4; margin-right: 6px;"></i> Small team, big dreams.</p>
+        </div>
+        <div class="story-image"></div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>© 2026 lilywanie | Built with <i class="fas fa-heart" style="color:#ff69b4;"></i></p>
+    </div>
+</div>
+
+<script>
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    const closeSidebarBtn = document.getElementById('closeSidebarBtn');
+
+    function openSidebar() {
+        sidebar.classList.add('open');
+        overlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeSidebar() {
+        sidebar.classList.remove('open');
+        overlay.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    hamburgerBtn.addEventListener('click', openSidebar);
+    closeSidebarBtn.addEventListener('click', closeSidebar);
+    overlay.addEventListener('click', closeSidebar);
+
+    // ===== MODAL ZOOM GAMBAR =====
+    const modal = document.getElementById('imageModal');
+    const modalImage = document.getElementById('modalImage');
+    const modalCloseBtn = document.getElementById('modalCloseBtn');
+
+    const profileImgs = document.querySelectorAll('.profile-img');
+    
+    profileImgs.forEach(img => {
+        img.addEventListener('click', (e) => {
+            e.stopPropagation();
+            modalImage.src = img.src;
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+    });
+
+    modalCloseBtn.addEventListener('click', () => {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+    });
+
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.classList.contains('active')) {
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    });
+</script>
+</body>
+</html>

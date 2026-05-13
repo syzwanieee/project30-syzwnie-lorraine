@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>MEDICARE - My Profile</title>
+    <link rel="stylesheet" href="profile.css">
+    <!-- jQuery mesti dipanggil dulu -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+<body>
+    <div class="leaf-bg">
+        <div class="leaf leaf-1"></div>
+        <div class="leaf leaf-2"></div>
+        <div class="leaf leaf-3"></div>
+        <div class="leaf leaf-4"></div>
+        <div class="leaf leaf-5"></div>
+        <div class="leaf leaf-6"></div>
+        <div class="leaf leaf-7"></div>
+        <div class="leaf leaf-8"></div>
+        <div class="leaf leaf-9"></div>
+        <div class="leaf leaf-10"></div>
+        <div class="leaf leaf-11"></div>
+        <div class="leaf leaf-12"></div>
+    </div>
+
+    <div class="main-container">
+        <div class="back-header">
+            <button class="back-btn" onclick="goBack()">← Back</button>
+            <h2>My Profile</h2>
+            <div></div>
+        </div>
+
+        <div class="profile-photo-section">
+            <div class="profile-photo-container">
+                <!-- Default guna icon people SVG -->
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236aa85f'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E" alt="Profile" class="profile-photo" id="profilePhoto">
+                
+                <!-- Toggle Dropdown Button -->
+                <div class="photo-options">
+                    <button class="photo-toggle-btn" id="photoToggleBtn">
+                        <span>📷 Photo Options</span>
+                        <span class="toggle-arrow">▼</span>
+                    </button>
+                    <div class="photo-dropdown" id="photoDropdown">
+                        <button class="dropdown-item" id="changePhotoBtn">
+                            <span>📷</span> Change Photo
+                        </button>
+                        <button class="dropdown-item" id="resetPhotoBtn">
+                            <span>🔄</span> Reset to Default
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="profile-info-card">
+            <h3>Personal Information</h3>
+            
+            <div class="info-group">
+                <label>Full Name</label>
+                <div class="info-value" id="displayName">Guest</div>
+                <button class="btn-edit" onclick="editField('name')">✏️</button>
+            </div>
+
+            <div class="info-group">
+                <label>Phone Number</label>
+                <div class="info-value" id="displayPhone">-</div>
+                <button class="btn-edit" onclick="editField('phone')">✏️</button>
+            </div>
+
+            <div class="info-group">
+                <label>Address</label>
+                <div class="info-value" id="displayAddress">-</div>
+                <button class="btn-edit" onclick="editField('address')">✏️</button>
+            </div>
+
+            <div class="info-row">
+                <div class="info-group half">
+                    <label>Postcode</label>
+                    <div class="info-value" id="displayPostcode">-</div>
+                    <button class="btn-edit" onclick="editField('postcode')">✏️</button>
+                </div>
+                <div class="info-group half">
+                    <label>City</label>
+                    <div class="info-value" id="displayCity">-</div>
+                    <button class="btn-edit" onclick="editField('city')">✏️</button>
+                </div>
+            </div>
+
+            <div class="info-group">
+                <label>State</label>
+                <div class="info-value" id="displayState">-</div>
+                <button class="btn-edit" onclick="editField('state')">✏️</button>
+            </div>
+        </div>
+
+        <div class="member-card">
+            <span>📅 Member Since</span>
+            <strong id="memberSince">Today</strong>
+        </div>
+
+        <button id="logoutBtn" class="btn-logout">🚪 Logout</button>
+    </div>
+
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="editModalTitle">Edit</h3>
+                <span class="close-modal" onclick="closeEditModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="editInput" class="edit-input" placeholder="">
+                <div class="modal-buttons">
+                    <button class="btn-cancel" onclick="closeEditModal()">Cancel</button>
+                    <button class="btn-save" onclick="saveEdit()">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="profile.js"></script>
+    <script src="darkmodeall.js"></script>
+</body>
+</html>
